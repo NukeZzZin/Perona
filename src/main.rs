@@ -49,7 +49,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 		.framework(framework)
 		.await
 		.expect("[-] Failed to create serenity client.");
-	if let Err(why) = client.start_shards(4).await {
+	if let Err(why) = client.start_shards(8).await {
 		eprintln!("[-] An error occurred while running client: {:?}", why);
 	}
 	Ok(())
