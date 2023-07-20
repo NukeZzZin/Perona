@@ -2,11 +2,11 @@
 
 #### 🌎 Prerequisites
 - Install the [_Rust_](https://www.rust-lang.org/tools/install).
-- Install Node Dependencies using **`cargo check`** in your terminal.
+- Install Rust Dependencies using **`cargo check`** in your terminal.
 
 #### 🚚 Installation
 1. Clone the repository using **`git clone https://github.com/NukeZzZin/Perona.git`** in your terminal.
-2. Install Node Dependencies using **`cargo check`** in your terminal
+2. Install Rust Dependencies using **`cargo check`** in your terminal
 
 #### 🐱‍💻 Local Developing run
 1. Use **`cargo run`** in your terminal.
