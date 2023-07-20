@@ -1,5 +1,5 @@
 mod commands;
-use crate::commands::general::*;
+mod utilities;
 use std::{
 	env,
 	error::Error
@@ -11,13 +11,16 @@ use serenity::{
 		StandardFramework
 	},
 	client::EventHandler,
+	model::id::UserId,
 	prelude::*,
 	model::prelude::*
 };
+use crate::commands::utilities::*;
 
 #[group]
-#[commands(ping, invite)]
-struct General;
+#[description = "👻 Aqui estão algumas funções utilitárias da senhorita Perona 👻"]
+#[commands(ping, invite, source)]
+struct Utilities;
 
 #[derive(Debug)]
 struct Handler;
@@ -40,9 +43,16 @@ impl EventHandler for Handler {
 async fn main() -> Result<(), Box<dyn Error>> {
 	dotenv::dotenv().expect("[-] Failed to load environment file.");
 	let token = env::var("DISCORD_TOKEN").expect("[-] Failed to find DISCORD_TOKEN in environment file.");
+	let application_id = env::var("APPLICATION_ID").expect("[-] Failed to find APPLICATION_ID in environment file.");
 	let framework = StandardFramework::new()
-		.configure(|conf| conf.with_whitespace(false).prefix("P!"))
-		.group(&GENERAL_GROUP);
+		.configure(|conf| {
+			conf
+				.with_whitespace(false)
+				.prefix("P!")
+				.on_mention(Some(UserId(application_id.parse::<u64>().unwrap())))
+				.case_insensitivity(true)
+		})
+		.group(&UTILITIES_GROUP);
 	let intents = GatewayIntents::all();
 	let mut client = Client::builder(&token, intents)
 		.event_handler(Handler)
