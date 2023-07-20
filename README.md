@@ -1,20 +1,25 @@
-## 🚀 Getting Started
+# 🚀 Getting Started
 
-#### 🌎 Prerequisites
+This project is just a simple discord bot, made in rust using _Serenity_, _Tokio_, _Dotenv_. With builds in Windows and Linux using cargo.
+
+## 🌎 Prerequisites
+
 - Install the [_Rust_](https://www.rust-lang.org/tools/install).
-- Install Node Dependencies using **`cargo check`** in your terminal.
+- Install Rust Dependencies using **`cargo check`** in your terminal.
 
-#### 🚚 Installation
+### 🚚 Installation
+
 1. Clone the repository using **`git clone https://github.com/NukeZzZin/Perona.git`** in your terminal.
-2. Install Node Dependencies using **`cargo check`** in your terminal
+2. Install Rust Dependencies using **`cargo check`** in your terminal
 
-#### 🐱‍💻 Local Developing run
+### 🐱‍💻 Local Developing run
+
 1. Use **`cargo run`** in your terminal.
 
-#### 🏎️ Local production run
+### 🏎️ Local production run
+
 1. Use **`cargo build --release`** in your terminal.
 2. Use **`./target/release/build/project`** in your terminal.
-
 
 ## 📝 License
 
