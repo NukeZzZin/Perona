@@ -10,7 +10,7 @@ pub async fn perona_default_embed(context: &Context, message: &Message, title: S
 	callback
 		.author(|author| author.name(title))
 		.description(description)
-		.thumbnail("https://i.imgur.com/MYNjFgT.gif")
+		.thumbnail("https://i.imgur.com/MYNjFgT.gif") // * define it with thumbnail default for embeds
 		.color(0xCC6699)
 		.footer(|footer| footer.text("Senhorita Perona's").icon_url(&perona_image))
 		.timestamp(message.timestamp.to_rfc3339());
