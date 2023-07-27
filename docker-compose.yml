@@ -1,0 +1,21 @@
+version: "3"
+services:
+  database:
+    image: mongo
+    container_name: perona_database
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - perona_database:/data/db
+  perona:
+    container_name: perona_client
+    restart: always
+    build: .
+    depends_on:
+      - database
+    environment:
+      - DATABASE_URI=mongodb://mongodb:27017/perona_database
+volumes:
+  perona_database:
+    name: perona_database

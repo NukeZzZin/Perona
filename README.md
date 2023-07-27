@@ -1,28 +1,36 @@
-# 🚀 Getting Started
+# 🚀 **_Getting Started_**
 
-This project is just a simple discord bot, made in rust using _Serenity_, _Tokio_, _Dotenv_. With builds in Windows and Linux using cargo.
+This project is just a simple discord bot, made in rust using **_Serenity_**, **_Tokio_**, **_Dotenv_**, **_MongoDB_**. With builds in Windows, Linux and others systems using **_Cargo_**.
 
-## 🌎 Prerequisites
+## 🌎 **_Prerequisites_**
 
-- Install the [_Rust_](https://www.rust-lang.org/tools/install).
-- Install Rust Dependencies using **`cargo check`** in your terminal.
+- Create a database with [**_MongoDB_**](https://www.mongodb.com).
+- Install the [**_Rust_**](https://www.rust-lang.org/tools/install).
+- Install Rust Dependencies using **_`cargo check`_** in your terminal.
+- Setup [**_Discord Developer Portal_**](https://discord.com/developers/applications) settings.
+- Setup local environments in **_`.env`_** file, as in example in **_`.env.example`_**.
 
-### 🚚 Installation
+### 🚚 **_Installation_**
 
-1. Clone the repository using **`git clone https://github.com/NukeZzZin/Perona.git`** in your terminal.
-2. Install Rust Dependencies using **`cargo check`** in your terminal
+1. Clone the repository using **_`git clone https://github.com/NukeZzZin/Perona.git`_** in your terminal.
+2. Install Rust Dependencies using **_`cargo check`_** in your terminal.
 
-### 🐱‍💻 Local Developing run
+#### 🐱‍💻 **_Local Developing run_**
 
-1. Use **`cargo run`** in your terminal.
+1. Use **_`cargo run --verbose`_** in your terminal.
 
-### 🏎️ Local production run
+#### 🏎️ **_Local production run_**
 
-1. Use **`cargo build --release`** in your terminal.
-2. Use **`./target/release/build/project`** in your terminal.
+1. Use **_`cargo build --release --verbose`_** in your terminal.
+2. Use **_`./target/release/perona`_** in your terminal.
 
-## 📝 License
+#### 📦 **_Docker production run_**
 
-> ***You can check out the full license [**_here_**](https://github.com/NukeZzZin/Perona/blob/master/LICENSE)***
+1. Build docker container using **_`docker-compose build`_** in your terminal.
+2. Initialize docker container using **_`docker-compose up -d`_** in your terminal.
 
-*This project is licensed under the terms of the **GNU AFFERO GENERAL PUBLIC LICENSE v3.0** license.*
+## 📝 **_License_**
+
+> **_You can check out the full license [here](https://github.com/NukeZzZin/Perona/blob/master/LICENSE)._**
+
+*This project is licensed under the terms of the **_GNU AFFERO GENERAL PUBLIC LICENSE v3.0_** license.*

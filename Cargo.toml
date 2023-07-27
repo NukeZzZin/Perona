@@ -1,5 +1,5 @@
 [package]
-name = "project"
+name = "perona"
 version = "1.7.2"
 authors = ["Nuke <86313547+NukeZzZin@users.noreply.github.com>"]
 edition = "2021"
