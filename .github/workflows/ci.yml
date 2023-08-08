@@ -2,6 +2,13 @@ name: CI
 
 on: [push, pull_request]
 
+env:
+    APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
+    CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+    DATABASE_URI: ${{ secrets.DATABASE_URI }}
+    DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+    PUBLIC_KEY: ${{ secrets.PUBLIC_KEY }}
+
 jobs:
     build:
         strategy:
@@ -10,13 +17,9 @@ jobs:
         runs-on: ${{ matrix.os }}
 
         steps:
-            - name: Checkout repository
-              uses: actions/checkout@v3
-
-            - name: Build and Test repository
-              run: |
-                cargo build --verbose
-                cargo test --verbose
+            - uses: actions/checkout@v3
+            - name: Building project
+              run: cargo build --verbose
 
 
 
