@@ -11,3 +11,4 @@ tokio = { version = "1.29.1", features = ["full"] }
 dotenv = { version = "0.15.0" }
 mongodb = { version = "2.6.0" }
 serde = { version = "1.0.175" }
+chrono = { version = "0.4.26" }

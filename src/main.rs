@@ -2,7 +2,7 @@ mod commands;
 mod utilities;
 use std::{
 	env::var,
-	error::Error,
+	process::exit,
 	sync::Arc
 };
 use serenity::{
@@ -11,18 +11,29 @@ use serenity::{
 		macros::group,
 		StandardFramework
 	},
+	model::prelude::{
+		Activity,
+		OnlineStatus,
+		Ready,
+		GatewayIntents,
+		GuildId,
+		UserId,
+		// UnavailableGuild,
+		ResumedEvent,
+		// Guild
+	},
+	prelude::Context,
 	Client as SerenityClient,
 	client::EventHandler,
-	prelude::*,
-	model::prelude::*
 };
 use mongodb::{
-	// bson::doc,
 	Client as MongodbClient,
-	options::ClientOptions
+	options::ClientOptions,
+	bson::doc
 };
 use dotenv::dotenv;
 use crate::commands::utilities::*;
+use crate::commands::customizations::*;
 use crate::utilities::structures::*;
 
 #[group]
@@ -30,14 +41,20 @@ use crate::utilities::structures::*;
 #[commands(ping, invite, source)]
 struct Utilities;
 
+#[group]
+#[description = "👻 Aqui estão algumas funções para customização da senhorita Perona 👻"]
+#[commands(prefix)]
+struct Customizations;
+
 #[derive(Debug)]
 struct Handler;
 
 #[async_trait]
 impl EventHandler for Handler {
 	async fn ready(&self, context: Context, ready: Ready) {
-		println!("[+] Perona's was initialized successfully, using shards {}/{} with api version v{}.", ready.shard.unwrap()[0] + 1, ready.shard.unwrap()[1], ready.version);
-		context.shard.set_presence(Some(Activity::playing("👻 que tal tentar digitar P!help 👻")), OnlineStatus::DoNotDisturb);
+		let shards = ready.shard.unwrap();
+		println!("[+] Perona's was initialized successfully, using shards {}/{} with api version v{}.", shards[0] + 1, shards[1], ready.version);
+		context.shard.set_presence(Some(Activity::watching("👻 Hallow-Hallow 👻")), OnlineStatus::DoNotDisturb);
 		// TODO: finish implementing ready event.
 	}
 
@@ -45,6 +62,20 @@ impl EventHandler for Handler {
 		println!("[+] Perona's now ready to be used, cache has been fully loaded.");
 		// TODO: finish implementing cache_ready event.
 	}
+
+	// async fn guild_create(&self, context: Context, guild: Guild, _new: bool) {
+	// 	let read = context.data.read().await;
+	// 	if let Some(collection) = read.get::<GuildsCollectionContainer>() {
+	// 		collection.data.insert_one(GuildsCollection::new(guild.id.0.to_string()), None).await.unwrap();
+	// 	}
+	// }
+
+	// async fn guild_delete(&self, context: Context, incomplete: UnavailableGuild, _guild: Option<Guild>) {
+	// 	let read = context.data.read().await;
+	// 	if let Some(collection) = read.get::<GuildsCollectionContainer>() {
+	// 		collection.data.find_one_and_delete(doc!{"_id":incomplete.id.0.to_string()}, None).await.unwrap();
+	// 	}
+    // }
 
 	async fn resume(&self, _context: Context, resume: ResumedEvent) {
 		resume.trace.into_iter().for_each(|message| {
@@ -55,47 +86,46 @@ impl EventHandler for Handler {
 }
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn Error>> {
+async fn main() {
 	dotenv().expect("[-] Failed to load environment file.");
 	let token = var("DISCORD_TOKEN").expect("[-] Failed to find DISCORD_TOKEN in environment file.");
 	let application_id = var("APPLICATION_ID").expect("[-] Failed to find APPLICATION_ID in environment file.");
 	let database_uri = var("DATABASE_URI").expect("[-] Failed to find DATABASE_URI in environment file.");
 	let database_config = ClientOptions::parse(&database_uri).await.unwrap();
 	let database_client = MongodbClient::with_options(database_config).unwrap();
-	match database_client.list_database_names(None, None).await {
+	let database_object = database_client.database("database_perona");
+	match database_object.run_command(doc!{"ping":0}, None).await {
 		Ok(_) => println!("[+] Perona's has been successfully connected to database."),
 		Err(why) => {
 			eprintln!("[-]  An error occurred while trying to connect to database: {:?}", why);
-			return Err(why.into());
+			exit(0x1);
 		}
 	}
-	let database_object = database_client.database("database_perona");
 	let users_collection = database_object.collection::<UsersCollection>("users_perona");
 	let guilds_collection = database_object.collection::<GuildsCollection>("guilds_perona");
 	let framework = StandardFramework::new()
 		.configure(|configuraion| {
-			return configuraion
+			configuraion
 				.with_whitespace(false)
 				.prefix("P!")
 				.case_insensitivity(true)
-				.on_mention(Some(UserId(application_id.parse::<u64>().unwrap())));
+				.on_mention(Some(UserId(application_id.parse::<u64>().unwrap())))
 		})
-		.group(&UTILITIES_GROUP);
-	let intents = GatewayIntents::all();
-	let mut serenity_client = SerenityClient::builder(&token, intents)
+		.group(&UTILITIES_GROUP)
+		.group(&CUSTOMIZATIONS_GROUP);
+	// let intents = GatewayIntents::all();
+	let mut serenity_client = SerenityClient::builder(&token, GatewayIntents::default())
 		.event_handler(Handler)
 		.framework(framework)
 		.await
 		.expect("[-] Failed to create serenity client.");
 	{
 		let mut write = serenity_client.data.write().await;
-		write.insert::<GuildsCollectionRuntime>(Arc::new(GuildsCollectionRuntime::new()));
 		write.insert::<UsersCollectionContainer>(Arc::new(UsersCollectionContainer::new(users_collection)));
 		write.insert::<GuildsCollectionContainer>(Arc::new(GuildsCollectionContainer::new(guilds_collection)));
 	}
 	if let Err(why) = serenity_client.start_shards(8).await {
 		eprintln!("[-] An error occurred while running client: {:?}", why);
-		return Err(why.into());
+		exit(0x1);
 	}
-	return Ok(());
 }

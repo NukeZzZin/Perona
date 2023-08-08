@@ -1,6 +1,6 @@
 # 🚀 **_Getting Started_**
 
-This project is just a simple discord bot, made in rust using **_Serenity_**, **_Tokio_**, **_Dotenv_**, **_MongoDB_**. With builds in Windows, Linux and others systems using **_Cargo_**.
+This project is just a simple discord bot, made in **_Rust_** using **_Serenity_**, **_Tokio_**, **_Dotenv_**, **_MongoDB_**. With builds in Windows, Linux and others systems using **_Cargo_**.
 
 ## 🌎 **_Prerequisites_**
 
@@ -33,4 +33,4 @@ This project is just a simple discord bot, made in rust using **_Serenity_**, **
 
 > **_You can check out the full license [here](https://github.com/NukeZzZin/Perona/blob/master/LICENSE)._**
 
-*This project is licensed under the terms of the **_GNU AFFERO GENERAL PUBLIC LICENSE v3.0_** license.*
+_This project is licensed under the terms of the **_GNU AFFERO GENERAL PUBLIC LICENSE v3.0_** license._
