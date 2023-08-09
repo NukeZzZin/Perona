@@ -94,7 +94,7 @@ async fn main() {
 	let database_config = ClientOptions::parse(&database_uri).await.unwrap();
 	let database_client = MongodbClient::with_options(database_config).unwrap();
 	let database_object = database_client.database("database_perona");
-	match database_object.run_command(doc!{"ping":0}, None).await {
+	match database_object.run_command(doc!{"ping":1}, None).await {
 		Ok(_) => println!("[+] Perona's has been successfully connected to database."),
 		Err(why) => {
 			eprintln!("[-]  An error occurred while trying to connect to database: {:?}", why);
