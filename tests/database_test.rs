@@ -15,18 +15,18 @@ mod database_test {
 	use super::*;
 	#[tokio::test]
 	async fn connect_test() {
-		dotenv().expect("[-] Failed to load environment file.");
+		dotenv().ok();
 		let database_uri = var("DATABASE_TEST_URI").expect("[-] Failed to find DATABASE_URI in environment file.");
 		let database_config = ClientOptions::parse(&database_uri).await.unwrap();
 		let database_client = MongodbClient::with_options(database_config).unwrap();
 		let database_object = database_client.database("database_test");
 		let connection_callback = database_object.run_command(doc!{"ping":1}, None).await.unwrap();
-		assert_eq!(connection_callback.get("ok").and_then(Bson::as_f64), Some(1.0));
+		assert_eq!(connection_callback.get("ok").and_then(Bson::as_i32), Some(1));
 	}
 
 	#[tokio::test]
 	async fn interactions_test() {
-		dotenv().expect("[-] Failed to load environment file.");
+		dotenv().ok();
 		let database_uri = var("DATABASE_TEST_URI").expect("[-] Failed to find DATABASE_URI in environment file.");
 		let database_config = ClientOptions::parse(&database_uri).await.unwrap();
 		let database_client = MongodbClient::with_options(database_config).unwrap();
