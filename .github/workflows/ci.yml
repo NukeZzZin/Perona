@@ -2,19 +2,15 @@ name: CI
 
 on: [push, pull_request]
 
-# env:
-#     APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
-#     CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
-#     DATABASE_URI: ${{ secrets.DATABASE_URI }}
-#     DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
-#     PUBLIC_KEY: ${{ secrets.PUBLIC_KEY }}
-
 jobs:
-    build:
+    test:
         strategy:
             matrix:
                 os: [windows-latest, ubuntu-latest, macos-latest]
         runs-on: ${{ matrix.os }}
+
+        env:
+            DATABASE_TEST_URI: ${{ secrets.DATABASE_TEST_URI }}
 
         steps:
             - uses: actions/checkout@v3
