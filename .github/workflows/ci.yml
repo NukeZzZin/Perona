@@ -1,4 +1,4 @@
-name: CI
+name: Continuous Integration
 
 on: [push, pull_request]
 
@@ -24,7 +24,3 @@ jobs:
               run: |
                 cargo check --verbose
                 cargo build --verbose
-
-
-
-

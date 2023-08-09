@@ -1,4 +1,7 @@
-# 🚀 **_Getting Started_**
+# 👻 **_Perona_**
+
+[![CI](https://github.com/NukeZzZin/Perona/actions/workflows/ci.yml/badge.svg)](https://github.com/NukeZzZin/Perona/actions/workflows/ci.yml)
+[![LICENSE](https://img.shields.io/badge/license-AGPL%20v3-blue.svg)](https://github.com/NukeZzZin/Perona/blob/master/LICENSE)
 
 This project is just a simple discord bot, made in **_Rust_** using **_Serenity_**, **_Tokio_**, **_Dotenv_**, **_MongoDB_**. With builds in Windows, Linux and others systems using **_Cargo_**.
 
