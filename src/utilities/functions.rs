@@ -10,7 +10,7 @@ pub async fn perona_default_embed(context: &Context, title: String, description:
 	callback
 		.author(|author| author.name(title))
 		.description(description)
-		.thumbnail("https://i.imgur.com/MYNjFgT.gif") // * define it with default thumbnail image for embeds
+		.thumbnail("https://i.imgur.com/MYNjFgT.gif") // TODO: define it with default thumbnail image for embeds
 		.color(0xCC_66_99u32)
 		.footer(|footer| footer.text("Senhorita Perona's").icon_url(&perona_image))
 		.timestamp(Utc::now());

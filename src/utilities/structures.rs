@@ -6,8 +6,8 @@ use mongodb::{
 	Collection,
 	bson::DateTime
 };
-use std::sync::Arc;
 use serenity::prelude::TypeMapKey;
+use std::sync::Arc;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct UsersCollection {
@@ -20,7 +20,6 @@ pub struct UsersCollection {
 pub struct GuildsCollection {
 	#[serde(rename="_id")]
 	pub guild_id: String,
-	pub guild_prefix: String,
 	pub created_at: DateTime
 }
 
@@ -49,7 +48,6 @@ impl GuildsCollection {
 	pub fn new(guild_id: String) -> Self {
 		return GuildsCollection {
 			guild_id: guild_id,
-			guild_prefix: String::from("P!"),
 			created_at: DateTime::now()
 		}
 	}
