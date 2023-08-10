@@ -3,7 +3,8 @@ mod utilities;
 use std::{
 	env::var,
 	process::exit,
-	sync::Arc
+	sync::Arc,
+	time::SystemTime
 };
 use serenity::{
 	async_trait,
@@ -18,9 +19,7 @@ use serenity::{
 		GatewayIntents,
 		GuildId,
 		UserId,
-		// UnavailableGuild,
-		ResumedEvent,
-		// Guild
+		ResumedEvent
 	},
 	prelude::Context,
 	Client as SerenityClient,
@@ -33,18 +32,12 @@ use mongodb::{
 };
 use dotenv::dotenv;
 use crate::commands::utilities::*;
-use crate::commands::customizations::*;
 use crate::utilities::structures::*;
 
 #[group]
 #[description = "👻 Aqui estão algumas funções utilitárias da senhorita Perona 👻"]
-#[commands(ping, invite, source)]
+#[commands(ping, invite, uptime)]
 struct Utilities;
-
-#[group]
-#[description = "👻 Aqui estão algumas funções para customização da senhorita Perona 👻"]
-#[commands(prefix)]
-struct Customizations;
 
 #[derive(Debug)]
 struct Handler;
@@ -63,27 +56,15 @@ impl EventHandler for Handler {
 		// TODO: finish implementing cache_ready event.
 	}
 
-	// async fn guild_create(&self, context: Context, guild: Guild, _new: bool) {
-	// 	let read = context.data.read().await;
-	// 	if let Some(collection) = read.get::<GuildsCollectionContainer>() {
-	// 		collection.data.insert_one(GuildsCollection::new(guild.id.0.to_string()), None).await.unwrap();
-	// 	}
-	// }
-
-	// async fn guild_delete(&self, context: Context, incomplete: UnavailableGuild, _guild: Option<Guild>) {
-	// 	let read = context.data.read().await;
-	// 	if let Some(collection) = read.get::<GuildsCollectionContainer>() {
-	// 		collection.data.find_one_and_delete(doc!{"_id":incomplete.id.0.to_string()}, None).await.unwrap();
-	// 	}
-    // }
-
 	async fn resume(&self, _context: Context, resume: ResumedEvent) {
 		resume.trace.into_iter().for_each(|message| {
-			println!("[!] resumed after reconnection, logging using trace: {:?}", message.unwrap());
+			println!("[!] resumed after reconnection, logging using trace: {:?}", message);
 		});
 		// TODO: finish implementing resume event.
 	}
 }
+
+pub static mut UPTIME: Option<SystemTime> = None;
 
 #[tokio::main]
 async fn main() {
@@ -111,15 +92,15 @@ async fn main() {
 				.case_insensitivity(true)
 				.on_mention(Some(UserId(application_id.parse::<u64>().unwrap())))
 		})
-		.group(&UTILITIES_GROUP)
-		.group(&CUSTOMIZATIONS_GROUP);
-	// let intents = GatewayIntents::all();
-	let mut serenity_client = SerenityClient::builder(&token, GatewayIntents::default())
+		.group(&UTILITIES_GROUP);
+	let intents = GatewayIntents::all();
+	let mut serenity_client = SerenityClient::builder(&token, intents)
 		.event_handler(Handler)
 		.framework(framework)
 		.await
 		.expect("[-] Failed to create serenity client.");
-	{
+	unsafe {
+		UPTIME = Some(SystemTime::now());
 		let mut write = serenity_client.data.write().await;
 		write.insert::<UsersCollectionContainer>(Arc::new(UsersCollectionContainer::new(users_collection)));
 		write.insert::<GuildsCollectionContainer>(Arc::new(GuildsCollectionContainer::new(guilds_collection)));

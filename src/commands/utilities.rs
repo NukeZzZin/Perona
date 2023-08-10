@@ -9,30 +9,37 @@ use serenity::{
 	},
 	prelude::Context
 };
+use crate::{
+	utilities::functions::perona_default_embed,
+	UPTIME
+};
 use tokio::time::Instant;
-use crate::utilities::functions::perona_default_embed;
 
 #[command]
 #[aliases("latency")]
 pub async fn ping(context: &Context, message: &Message) -> CommandResult {
+	// * it's get gateway latency from elapsed time to message sent.
 	let response_latency_start = Instant::now();
 	let mut response = message.channel_id.send_message(&context.http, |message| {
 		message.content("🏓 Calculando a latência... 🏓");
 		return message;
 	}).await.unwrap();
 	let response_latency_end = response_latency_start.elapsed();
+	drop(response_latency_start);
+	// * it's get gateway latency from elapsed time in ping geteway.
 	let gateway_latency_start = Instant::now();
     context.http.get_gateway().await.unwrap();
     let gateway_latency_end = gateway_latency_start.elapsed();
+	drop(gateway_latency_start);
 	let embed_content = perona_default_embed(&context,
 		String::from("👻 Informações sobre a latência da Perona 👻"),
-		format!("🎈 Latência do getaway é de **_`{}ms`_**.\n🔥 Latência da api é de **_`{}ms`_**.",
+		format!("🎈 Latência do getaway : **_`{}ms`_**.\n🔥 Latência da api : **_`{}ms`_**.",
 			gateway_latency_end.as_millis(),
 			response_latency_end.as_millis())
 	).await;
 	response.edit(&context.http, |edit| {
 		edit
-			.content("\u{0}") // * clear content of last message.
+			.content(b'\0') // * it's set content with null byte.
 			.embed(|embed| {
 				embed.clone_from(&embed_content);
 				return embed;
@@ -60,12 +67,19 @@ pub async fn invite(context: &Context, message: &Message) -> CommandResult {
 }
 
 #[command]
-#[aliases("github")]
-pub async fn source(context: &Context, message: &Message) -> CommandResult {
-	let embed_content = perona_default_embed(&context,
-		String::from("👻 Aqui está o meu código-fonte completo 👻"),
-		String::from("📦 Meu código-fonte completo no Github : ***https://github.com/NukeZzZin/Perona.***")
-	).await;
+pub async fn uptime(context: &Context, message: &Message) -> CommandResult {
+	let embed_content;
+	unsafe {
+		let now = UPTIME.unwrap().elapsed().unwrap();
+		embed_content = perona_default_embed(&context,
+			String::from("👻 Informações sobre o tempo de atividade da Perona 👻"),
+			format!("🕗 O tempo de atividade da Perona : ***{}d:{}h:{}m:{}s***.",
+				now.as_secs() / 86400,
+				(now.as_secs() % 86400) / 3600,
+				(now.as_secs() % 3600) / 60,
+				now.as_secs() % 60)
+		).await;
+	}
 	message.channel_id.send_message(&context.http, |message| {
 		message.embed(|embed| {
 			embed.clone_from(&embed_content);

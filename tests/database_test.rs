@@ -34,21 +34,21 @@ mod database_test {
 		let database_collection = database_object.collection::<Document>("collection_test");
 		let docuemnt_test = doc!{"key":"value"};
 
-		// * it simulate insert operation
+		// * it's simulate insert operation
 		database_collection.insert_one(docuemnt_test.clone(), None).await.unwrap();
 		let insert_one_callback = database_collection.find_one(docuemnt_test.clone(), None).await.unwrap().unwrap();
 		assert_eq!(insert_one_callback.is_empty(), false);
 
-		// * it simulate find operation
+		// * it's simulate find operation
 		let find_one_callback = database_collection.find_one(docuemnt_test.clone(), None).await.unwrap().unwrap();
 		assert_eq!(find_one_callback.get_str("key").unwrap(), "value");
 
-		// * it simulate update operation
+		// * it's simulate update operation
 		database_collection.update_one(docuemnt_test.clone(), doc!{"$set":{"new_key":"new_value"}}, None).await.unwrap();
 		let update_one_callback = database_collection.find_one(docuemnt_test.clone(), None).await.unwrap().unwrap();
 		assert_eq!(update_one_callback.get_str("new_key").unwrap(), "new_value");
 
-		// * it simulate delete operation
+		// * it's simulate delete operation
 		database_collection.delete_one(docuemnt_test.clone(), None).await.unwrap();
 		let delete_one_callback = database_collection.find_one(docuemnt_test.clone(), None).await.unwrap();
 		assert_eq!(delete_one_callback.is_none(), true)
