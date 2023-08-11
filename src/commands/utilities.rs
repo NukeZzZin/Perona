@@ -10,7 +10,10 @@ use serenity::{
 	prelude::Context
 };
 use crate::{
-	utilities::functions::perona_default_embed,
+	utilities::functions::{
+		perona_default_embed,
+		perona_format_time
+	},
 	UPTIME
 };
 use tokio::time::Instant;
@@ -25,12 +28,12 @@ pub async fn ping(context: &Context, message: &Message) -> CommandResult {
 		return message;
 	}).await.unwrap();
 	let response_latency_end = response_latency_start.elapsed();
-	drop(response_latency_start);
+	drop(response_latency_start); // * it's drop response_latency_start from memory.
 	// * it's get gateway latency from elapsed time in ping geteway.
 	let gateway_latency_start = Instant::now();
     context.http.get_gateway().await.unwrap();
     let gateway_latency_end = gateway_latency_start.elapsed();
-	drop(gateway_latency_start);
+	drop(gateway_latency_start); // * it's drop gateway_latency_start from memory.
 	let embed_content = perona_default_embed(&context,
 		String::from("👻 Informações sobre a latência da Perona 👻"),
 		format!("🎈 Latência do getaway : **_`{}ms`_**.\n🔥 Latência da api : **_`{}ms`_**.",
@@ -73,11 +76,8 @@ pub async fn uptime(context: &Context, message: &Message) -> CommandResult {
 		let now = UPTIME.unwrap().elapsed().unwrap();
 		embed_content = perona_default_embed(&context,
 			String::from("👻 Informações sobre o tempo de atividade da Perona 👻"),
-			format!("🕗 O tempo de atividade da Perona : ***{}d:{}h:{}m:{}s***.",
-				now.as_secs() / 86400,
-				(now.as_secs() % 86400) / 3600,
-				(now.as_secs() % 3600) / 60,
-				now.as_secs() % 60)
+			format!("🕗 O tempo de atividade da Perona : **_`{}`_**.",
+				perona_format_time(now.as_secs()).await)
 		).await;
 	}
 	message.channel_id.send_message(&context.http, |message| {

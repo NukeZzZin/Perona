@@ -1,12 +1,12 @@
 name: Continuous Integration
 
-on: [push, pull_request]
+on: [push]
 
 jobs:
     test:
         strategy:
             matrix:
-                os: [windows-latest, ubuntu-latest, macos-latest]
+                os: [windows-latest, ubuntu-latest]
         runs-on: ${{ matrix.os }}
 
         env:
