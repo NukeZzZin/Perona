@@ -29,10 +29,15 @@ use mongodb::{
 	options::ClientOptions,
 	bson::doc
 };
+use crate::utilities::structures::{
+	UsersCollection,
+	UsersCollectionContainer,
+	GuildsCollection,
+	GuildsCollectionContainer
+};
 use dotenv::dotenv;
+use crate::utilities::functions::PeronaLoggerStatus;
 use crate::commands::utilities::*;
-use crate::utilities::structures::*;
-use crate::utilities::functions::*;
 
 #[group]
 #[description = "👻 Aqui estão algumas funções utilitárias da senhorita Perona 👻"]
@@ -46,19 +51,19 @@ struct Handler;
 impl EventHandler for Handler {
 	async fn ready(&self, context: Context, ready: Ready) {
 		let shards = ready.shard.unwrap();
-		perona_println!(PeronaStatus::Info, "Perona's was initialized successfully, using shards {}/{} with api version v{}.", shards[0] + 1, shards[1], ready.version);
+		perona_println!(PeronaLoggerStatus::Info, "Perona's was initialized successfully, using shards {}/{} with api version v{}.", shards[0] + 1, shards[1], ready.version);
 		context.shard.set_presence(Some(Activity::watching("👻 Hallow-Hallow 👻")), OnlineStatus::DoNotDisturb);
 		// TODO: finish implementing ready event.
 	}
 
 	async fn cache_ready(&self, _context: Context, _guilds: Vec<GuildId>) {
-		perona_println!(PeronaStatus::Info, "Perona's now ready to be used, cache has been fully loaded.");
+		perona_println!(PeronaLoggerStatus::Info, "Perona's now ready to be used, cache has been fully loaded.");
 		// TODO: finish implementing cache_ready event.
 	}
 
 	async fn resume(&self, _context: Context, resume: ResumedEvent) {
 		resume.trace.into_iter().for_each(|message| {
-			perona_println!(PeronaStatus::Warning, "Perona's shard resumed after reconnection, logging using trace: {:?}", message);
+			perona_println!(PeronaLoggerStatus::Warning, "Perona's shard resumed after reconnection, logging using trace: {:#?}", message);
 		});
 		// TODO: finish implementing resume event.
 	}
@@ -76,9 +81,9 @@ async fn main() {
 	let database_client = MongodbClient::with_options(database_config).unwrap();
 	let database_object = database_client.database("database_perona");
 	match database_object.run_command(doc!{"ping":1}, None).await {
-		Ok(_) => perona_println!(PeronaStatus::Info, "Perona's has been successfully connected to database."),
+		Ok(_) => perona_println!(PeronaLoggerStatus::Info, "Perona's has been successfully connected to database."),
 		Err(why) => {
-			perona_println!(PeronaStatus::Fatal, "An error occurred while trying to connect to database: {:?}", why);
+			perona_println!(PeronaLoggerStatus::Fatal, "An error occurred while trying to connect to database: {:#?}", why);
 		}
 	}
 	let users_collection = database_object.collection::<UsersCollection>("users_perona");
@@ -105,6 +110,6 @@ async fn main() {
 		write.insert::<GuildsCollectionContainer>(Arc::new(GuildsCollectionContainer::new(guilds_collection)));
 	}
 	if let Err(why) = serenity_client.start_autosharded().await {
-		perona_println!(PeronaStatus::Fatal, "An error occurred while running client: {:?}", why);
+		perona_println!(PeronaLoggerStatus::Fatal, "An error occurred while running client: {:#?}", why);
 	}
 }
