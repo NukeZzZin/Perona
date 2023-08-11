@@ -104,7 +104,7 @@ async fn main() {
 		write.insert::<UsersCollectionContainer>(Arc::new(UsersCollectionContainer::new(users_collection)));
 		write.insert::<GuildsCollectionContainer>(Arc::new(GuildsCollectionContainer::new(guilds_collection)));
 	}
-	if let Err(why) = serenity_client.start_shards(8).await {
+	if let Err(why) = serenity_client.start_autosharded().await {
 		perona_println!(PeronaStatus::Fatal, "An error occurred while running client: {:?}", why);
 	}
 }

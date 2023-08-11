@@ -19,13 +19,13 @@ macro_rules! perona_println {
 		{
 			let timestamp = chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Millis, true);
 			match $status {
-                PeronaStatus::Info => println!("[\x1b[1;32mINFO\x1b[0m] (\x1b[1;30m{}\x1b[0m) - {}", timestamp, format_args!($($arg)*)),
-                PeronaStatus::Warning => println!("[\x1b[1;33mWARNING\x1b[0m] (\x1b[1;30m{}\x1b[0m) - {}", timestamp, format_args!($($arg)*)),
-                PeronaStatus::Error => eprintln!("[\x1b[1;31mERROR\x1b[0m] (\x1b[1;30m{}\x1b[0m) - {}", timestamp, format_args!($($arg)*)),
-                PeronaStatus::Debug => println!("[\x1b[1;34mDEBUG\x1b[0m] (\x1b[1;30m{}\x1b[0m) - {}", timestamp, format_args!($($arg)*)),
+                PeronaStatus::Info => println!("[\x1b[1;32mINFO\x1b[0m] (\x1b[1;90m{}\x1b[0m) - {}", timestamp, format_args!($($arg)*)),
+                PeronaStatus::Warning => println!("[\x1b[1;33mWARNING\x1b[0m] (\x1b[1;90m{}\x1b[0m) - {}", timestamp, format_args!($($arg)*)),
+                PeronaStatus::Error => eprintln!("[\x1b[1;91mERROR\x1b[0m] (\x1b[1;90m{}\x1b[0m) - {}", timestamp, format_args!($($arg)*)),
+                PeronaStatus::Debug => println!("[\x1b[1;36mDEBUG\x1b[0m] (\x1b[1;90m{}\x1b[0m) - [{}:{}] {}", timestamp, file!(), line!(), format_args!($($arg)*)),
 				PeronaStatus::Fatal => {
-					println!("[\x1b[1;34mDEBUG\x1b[0m] (\x1b[1;30m{}\x1b[0m) - {}", timestamp, format_args!($($arg)*));
-					std::process::exit(0x5442); // TODO: define perona return status codes
+					println!("[\x1b[1;91mFATAL\x1b[0m] (\x1b[1;90m{}\x1b[0m) - {}", timestamp, format_args!($($arg)*));
+					std::process::exit(0x5442 as i32); // TODO: define perona return status codes
 				}
 			}
 		}
