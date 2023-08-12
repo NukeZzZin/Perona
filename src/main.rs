@@ -13,7 +13,8 @@ use serenity::{
 			hook
 		},
 		StandardFramework,
-		CommandError
+		CommandResult,
+		DispatchError
 	},
 	model::prelude::{
 		channel::Message,
@@ -41,7 +42,10 @@ use crate::utilities::structures::{
 	GuildsCollectionContainer
 };
 use dotenv::dotenv;
-use crate::utilities::functions::PeronaLoggerStatus;
+use crate::utilities::functions::{
+	PeronaLoggerStatus,
+	perona_default_embed
+};
 use crate::commands::funny::*;
 use crate::commands::moderation::*;
 use crate::commands::utilities::*;
@@ -87,16 +91,62 @@ impl EventHandler for Handler {
 }
 
 #[hook]
-async fn before_hook(_context: &Context, _message: &Message, command: &str) -> bool {
-	perona_println!(PeronaLoggerStatus::Debug, "running command now: [{}]", command);
-	return true;
+async fn dispatch_error(context: &Context, message: &Message, error: DispatchError, command: &str) {
+	match error {
+		DispatchError::LackingPermissions(permissions) => {
+			let embed_content = perona_default_embed(&context,
+				String::from("👻 Não foi possível executar esté comando 👻"),
+				format!("💔 Perece que você não tem as permissões necessárias.\n🩹 Para executar este comando você precisar ter essas permissões : **_`{}`_**", permissions)
+			).await;
+			drop(message.channel_id.send_message(&context.http, |message| {
+				message.embed(|embed| {
+					embed.clone_from(&embed_content);
+					return embed;
+				});
+				return message;
+			}).await.unwrap());
+			drop(embed_content);
+		}
+		DispatchError::TooManyArguments { max, given } => {
+			let embed_content = perona_default_embed(&context,
+				String::from("👻 Não foi possível executar esté comando 👻"),
+				format!("💔 Tente remover argumentos desnecessários.\n🩹 Foram recebidos **_`{}`_** argumentos e tem como máximo de **_`{}`_**.", given, max)
+			).await;
+			drop(message.channel_id.send_message(&context.http, |message| {
+				message.embed(|embed| {
+					embed.clone_from(&embed_content);
+					return embed;
+				});
+				return message;
+			}).await.unwrap());
+			drop(embed_content);
+		}
+		DispatchError::NotEnoughArguments { min, given } => {
+			let embed_content = perona_default_embed(&context,
+				String::from("👻 Não foi possível executar esté comando 👻"),
+				format!("💔 Tente adicionar os argumentos necessários.\n🩹 Foram recebidos **_`{}`_** argumentos e são necessários **_`{}`_**.", given, min)
+			).await;
+			drop(message.channel_id.send_message(&context.http, |message| {
+				message.embed(|embed| {
+					embed.clone_from(&embed_content);
+					return embed;
+				});
+				return message;
+			}).await.unwrap());
+			drop(embed_content);
+		},
+		_ => {
+			perona_println!(PeronaLoggerStatus::Error, "An error occurred while running command: [{}]: {:#?}", command, error)
+		}
+	}
 }
 
 #[hook]
-async fn after_hook(_context: &Context, _message: &Message, command: &str, result: Result<(), CommandError>) {
+async fn after_hook(_context: &Context, _message: &Message, command: &str, result: CommandResult) {
 	if let Err(why) = result {
 		perona_println!(PeronaLoggerStatus::Error, "An error occurred while running command: [{}]: {:#?}", command, why);
 	}
+	// TODO: finish implementing after hooks
 }
 
 pub static mut UPTIME: Option<SystemTime> = None;
@@ -107,6 +157,7 @@ async fn main() {
 	unsafe {
 		UPTIME = Some(SystemTime::now());
 		// let trace = std::backtrace::Backtrace::force_capture();
+		// TODO: implement hook for logger.
 	}
 	dotenv().expect("[-] Failed to load environment file");
 	let token = var("DISCORD_TOKEN").expect("[-] Failed to find DISCORD_TOKEN in environment file");
@@ -132,8 +183,8 @@ async fn main() {
 				.on_mention(Some(UserId(application_id.parse::<u64>().unwrap())));
 			return configuraion;
 		})
-		.before(before_hook)
 		.after(after_hook)
+		.on_dispatch_error(dispatch_error)
 		.group(&FUNNY_GROUP)
 		.group(&MODERATION_GROUP)
 		.group(&UTILITIES_GROUP);

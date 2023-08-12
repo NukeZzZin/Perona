@@ -23,6 +23,7 @@ use crate::{
 #[command]
 #[only_in(guilds)]
 #[required_permissions(BAN_MEMBERS)]
+#[min_args(1)]
 pub async fn ban(context: &Context, message: &Message, mut arguments: Args) -> CommandResult {
 	let duration = arguments.single::<u8>().unwrap_or(0);
 	let user_id = arguments.single::<UserId>().unwrap();
@@ -45,7 +46,7 @@ pub async fn ban(context: &Context, message: &Message, mut arguments: Args) -> C
 			} else {
 					let embed_content = perona_default_embed(&context,
 						String::from("👻 O membro foi banido pela Perona 👻"),
-						format!("🔨 Membro foi banido pelo id : **_`{}`_**.\n📅 Membro foi banido pelo tempo : **_`{} dias`_**.\n📜 Membro foi banido pelo movito : **_`{}`_**.",
+						format!("🔨 Membro foi banido pelo ID : **_`{}`_**.\n📅 Membro foi banido pelo tempo : **_`{} dias`_**.\n📜 Membro foi banido pelo movito : **_`{}`_**.",
 							user_id.0, duration, reason)
 					).await;
 					message.channel_id.send_message(&context.http, |message| {
@@ -73,7 +74,7 @@ pub async fn ban(context: &Context, message: &Message, mut arguments: Args) -> C
 				} else {
 					let embed_content = perona_default_embed(&context,
 						String::from("👻 O membro foi banido pela Perona 👻"),
-						format!("🔨 Membro foi banido pelo id : **_`{}`_**.\n📅 Membro foi banido pelo tempo : **_`{} dias`_**.",
+						format!("🔨 Membro foi banido pelo ID : **_`{}`_**.\n📅 Membro foi banido pelo tempo : **_`{} dias`_**.",
 							user_id.0, duration)
 					).await;
 					message.channel_id.send_message(&context.http, |message| {
@@ -104,7 +105,22 @@ pub async fn ban(context: &Context, message: &Message, mut arguments: Args) -> C
 #[command]
 #[only_in(guilds)]
 #[required_permissions(KICK_MEMBERS)]
+#[min_args(1)]
 pub async fn kick(context: &Context, message: &Message, mut arguments: Args) -> CommandResult {
+	if arguments.is_empty() {
+		let embed_content = perona_default_embed(&context,
+			String::from("👻 Não foi possível executar esté comando 👻"),
+			String::from("🩹 Tente adicionar os argumentos necessários.")
+		).await;
+		message.channel_id.send_message(&context.http, |message| {
+			message.embed(|embed| {
+				embed.clone_from(&embed_content);
+				return embed;
+			});
+			return message;
+		}).await.unwrap();
+		return CommandResult::Ok(());
+	}
 	let user_id = arguments.single::<UserId>().unwrap();
 	let reason = arguments.remains();
 	if let Ok(member) = message.guild_id.unwrap().member(&context, user_id).await {
@@ -113,7 +129,7 @@ pub async fn kick(context: &Context, message: &Message, mut arguments: Args) -> 
 				perona_println!(PeronaLoggerStatus::Error, "An error occurred while running command: {:#?}", why);
 				let embed_content = perona_default_embed(&context,
 					String::from("👻 Não foi possível expulsar este membro 👻"),
-					String::from("❌ Ao tentar expulsar este membro enfrentei alguns problemas.")
+					String::from("🩹 Ao tentar expulsar este membro enfrentei alguns problemas.")
 				).await;
 				message.channel_id.send_message(&context.http, |message| {
 					message.embed(|embed| {
@@ -125,7 +141,7 @@ pub async fn kick(context: &Context, message: &Message, mut arguments: Args) -> 
 			} else {
 				let embed_content = perona_default_embed(&context,
 					String::from("👻 O membro foi banido pela Perona 👻"),
-					format!("🔨 Membro foi expulso pelo id : **_`{}`_**.\n📜 Membro foi expulso pelo movito : **_`{}`_**.",
+					format!("🔨 Membro foi expulso pelo ID : **_`{}`_**.\n📜 Membro foi expulso pelo movito : **_`{}`_**.",
 						user_id.0, reason)
 				).await;
 				message.channel_id.send_message(&context.http, |message| {
@@ -141,7 +157,7 @@ pub async fn kick(context: &Context, message: &Message, mut arguments: Args) -> 
 				perona_println!(PeronaLoggerStatus::Error, "An error occurred while running command: {:#?}", why);
 				let embed_content = perona_default_embed(&context,
 					String::from("👻 Não foi possível expulsar este membro 👻"),
-					String::from("❌ Ao tentar expulsar este membro enfrentei alguns problemas.")
+					String::from("🩹 Ao tentar expulsar este membro enfrentei alguns problemas.")
 				).await;
 				message.channel_id.send_message(&context.http, |message| {
 					message.embed(|embed| {
@@ -153,7 +169,7 @@ pub async fn kick(context: &Context, message: &Message, mut arguments: Args) -> 
 			} else {
 				let embed_content = perona_default_embed(&context,
 					String::from("👻 O membro foi expulso pela Perona 👻"),
-					format!("🔨 Membro foi expulso pelo id : **_`{}`_**.",
+					format!("🔨 Membro foi expulso pelo ID : **_`{}`_**.",
 						user_id.0)
 				).await;
 				message.channel_id.send_message(&context.http, |message| {
