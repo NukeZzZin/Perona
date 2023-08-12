@@ -93,6 +93,20 @@ impl EventHandler for Handler {
 #[hook]
 async fn dispatch_error(context: &Context, message: &Message, error: DispatchError, command: &str) {
 	match error {
+		DispatchError::Ratelimited(timeout) => {
+			let embed_content = perona_default_embed(&context,
+				String::from("👻 Não foi possível executar esté comando 👻"),
+				format!("💔 Perece que você excedeu o meu **_`rate limit`_**.\n🩹 Por favor aguarde **_`{} segundos`_**.", timeout.as_secs())
+			).await;
+			drop(message.channel_id.send_message(&context.http, |message| {
+				message.embed(|embed| {
+					embed.clone_from(&embed_content);
+					return embed;
+				});
+				return message;
+			}).await.unwrap());
+			drop(embed_content);
+		},
 		DispatchError::LackingPermissions(permissions) => {
 			let embed_content = perona_default_embed(&context,
 				String::from("👻 Não foi possível executar esté comando 👻"),
@@ -135,10 +149,53 @@ async fn dispatch_error(context: &Context, message: &Message, error: DispatchErr
 			}).await.unwrap());
 			drop(embed_content);
 		},
+		DispatchError::OnlyForDM => {
+			let embed_content = perona_default_embed(&context,
+				String::from("👻 Não foi possível executar esté comando 👻"),
+				String::from("💔 Esté comando é uso exclusivo dos para canal **_`DM`_**.\n")
+			).await;
+			drop(message.channel_id.send_message(&context.http, |message| {
+				message.embed(|embed| {
+					embed.clone_from(&embed_content);
+					return embed;
+				});
+				return message;
+			}).await.unwrap());
+			drop(embed_content);
+		}
+		DispatchError::OnlyForGuilds => {
+			let embed_content = perona_default_embed(&context,
+				String::from("👻 Não foi possível executar esté comando 👻"),
+				String::from("💔 Esté comando é uso exclusivo dos para canal **_`Guild`_**.\n")
+			).await;
+			drop(message.channel_id.send_message(&context.http, |message| {
+				message.embed(|embed| {
+					embed.clone_from(&embed_content);
+					return embed;
+				});
+				return message;
+			}).await.unwrap());
+			drop(embed_content);
+		}
+		DispatchError::OnlyForOwners => {
+			let embed_content = perona_default_embed(&context,
+				String::from("👻 Não foi possível executar esté comando 👻"),
+				String::from("💔 Esté comando é uso exclusivo dos meus **_`desenvolvedores`_**.\n")
+			).await;
+			drop(message.channel_id.send_message(&context.http, |message| {
+				message.embed(|embed| {
+					embed.clone_from(&embed_content);
+					return embed;
+				});
+				return message;
+			}).await.unwrap());
+			drop(embed_content);
+		},
 		_ => {
 			perona_println!(PeronaLoggerStatus::Error, "An error occurred while running command: [{}]: {:#?}", command, error)
 		}
 	}
+	// TODO: finish implementing dispatch_error hook
 }
 
 #[hook]
@@ -146,7 +203,7 @@ async fn after_hook(_context: &Context, _message: &Message, command: &str, resul
 	if let Err(why) = result {
 		perona_println!(PeronaLoggerStatus::Error, "An error occurred while running command: [{}]: {:#?}", command, why);
 	}
-	// TODO: finish implementing after hooks
+	// TODO: finish implementing after hook
 }
 
 pub static mut UPTIME: Option<SystemTime> = None;

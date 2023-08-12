@@ -107,20 +107,6 @@ pub async fn ban(context: &Context, message: &Message, mut arguments: Args) -> C
 #[required_permissions(KICK_MEMBERS)]
 #[min_args(1)]
 pub async fn kick(context: &Context, message: &Message, mut arguments: Args) -> CommandResult {
-	if arguments.is_empty() {
-		let embed_content = perona_default_embed(&context,
-			String::from("👻 Não foi possível executar esté comando 👻"),
-			String::from("🩹 Tente adicionar os argumentos necessários.")
-		).await;
-		message.channel_id.send_message(&context.http, |message| {
-			message.embed(|embed| {
-				embed.clone_from(&embed_content);
-				return embed;
-			});
-			return message;
-		}).await.unwrap();
-		return CommandResult::Ok(());
-	}
 	let user_id = arguments.single::<UserId>().unwrap();
 	let reason = arguments.remains();
 	if let Ok(member) = message.guild_id.unwrap().member(&context, user_id).await {
