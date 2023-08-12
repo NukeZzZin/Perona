@@ -4,13 +4,15 @@ use serenity::{
 };
 use chrono::Utc;
 
+
 #[allow(dead_code)]
+#[derive(PartialEq, PartialOrd)]
 pub enum PeronaLoggerStatus {
-    Info,
-    Warning,
-    Error,
-	Debug,
-	Fatal
+    Info = 1 << 0,
+    Warning = 1 << 1,
+    Error = 1 << 2,
+	Debug = 1 << 3,
+	Fatal = 1 << 4
 }
 
 #[macro_export]
@@ -18,14 +20,26 @@ macro_rules! perona_println {
 	($status:expr, $($arg:tt)*) => {
 		{
 			let timestamp = chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Millis, true);
-			match $status {
-                PeronaLoggerStatus::Info => println!("[\x1b[1;32mINFO\x1b[0m] (\x1b[1;90m{}\x1b[0m) - {}", timestamp, format_args!($($arg)*)),
-                PeronaLoggerStatus::Warning => println!("[\x1b[1;33mWARNING\x1b[0m] (\x1b[1;90m{}\x1b[0m) - {}", timestamp, format_args!($($arg)*)),
-                PeronaLoggerStatus::Error => eprintln!("[\x1b[1;91mERROR\x1b[0m] (\x1b[1;90m{}\x1b[0m) - {}", timestamp, format_args!($($arg)*)),
-                PeronaLoggerStatus::Debug => println!("[\x1b[1;36mDEBUG\x1b[0m] (\x1b[1;90m{}\x1b[0m) - [{}:{}] {}", timestamp, file!(), line!(), format_args!($($arg)*)),
-				PeronaLoggerStatus::Fatal => {
-					println!("[\x1b[1;91mFATAL\x1b[0m] (\x1b[1;90m{}\x1b[0m) - {}", timestamp, format_args!($($arg)*));
-					std::process::exit(0x5442 as i32); // TODO: define perona return status codes
+			if $status <= PeronaLoggerStatus::Info // * it's manually sets minimum log value.
+			{
+				match $status
+				{
+					PeronaLoggerStatus::Info => {
+						println!("[\x1b[1;32mINFO\x1b[0m] (\x1b[1;90m{}\x1b[0m) - {}.", timestamp, format_args!($($arg)*));
+					},
+					PeronaLoggerStatus::Warning => {
+						println!("[\x1b[1;33mWARNING\x1b[0m] (\x1b[1;90m{}\x1b[0m) - {}.", timestamp, format_args!($($arg)*));
+					},
+					PeronaLoggerStatus::Error => {
+						eprintln!("[\x1b[1;91mERROR\x1b[0m] (\x1b[1;90m{}\x1b[0m) - {}.", timestamp, format_args!($($arg)*));
+					},
+					PeronaLoggerStatus::Debug => {
+						println!("[\x1b[1;36mDEBUG\x1b[0m] (\x1b[1;90m{}\x1b[0m) - [{}:{}] {}.", timestamp, file!(), line!(), format_args!($($arg)*));
+					},
+					PeronaLoggerStatus::Fatal => {
+						println!("[\x1b[1;91mFATAL\x1b[0m] (\x1b[1;90m{}\x1b[0m) - {}.", timestamp, format_args!($($arg)*));
+						std::process::exit(0x5442 as i32); // TODO: define perona return status codes
+					}
 				}
 			}
 		}

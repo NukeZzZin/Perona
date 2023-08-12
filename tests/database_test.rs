@@ -4,7 +4,8 @@ use mongodb::{
 	bson::{
 		doc,
 		Bson,
-		Document
+		Document,
+		oid::ObjectId
 	}
 };
 use dotenv::dotenv;
@@ -32,7 +33,7 @@ mod database_test {
 		let database_client = MongodbClient::with_options(database_config).unwrap();
 		let database_object = database_client.database("database_test");
 		let database_collection = database_object.collection::<Document>("collection_test");
-		let docuemnt_test = doc!{"key":"value"};
+		let docuemnt_test = doc!{"_id":ObjectId::new(),"key":"value"};
 
 		// * it's simulate insert operation
 		database_collection.insert_one(docuemnt_test.clone(), None).await.unwrap();

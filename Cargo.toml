@@ -12,3 +12,4 @@ dotenv = { version = "0.15.0" }
 mongodb = { version = "2.6.0" }
 serde = { version = "1.0.175" }
 chrono = { version = "0.4.26" }
+rand = { version = "0.8.5" }
