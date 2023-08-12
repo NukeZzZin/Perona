@@ -51,6 +51,6 @@ mod database_test {
 		// * it's simulate delete operation
 		database_collection.delete_one(docuemnt_test.clone(), None).await.unwrap();
 		let delete_one_callback = database_collection.find_one(docuemnt_test.clone(), None).await.unwrap();
-		assert_eq!(delete_one_callback.is_none(), true)
+		assert_eq!(delete_one_callback.is_none(), true);
 	}
 }
