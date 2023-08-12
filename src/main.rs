@@ -8,10 +8,15 @@ use std::{
 use serenity::{
 	async_trait,
 	framework::standard::{
-		macros::group,
-		StandardFramework
+		macros::{
+			group,
+			hook
+		},
+		StandardFramework,
+		CommandError
 	},
 	model::prelude::{
+		channel::Message,
 		Activity,
 		OnlineStatus,
 		Ready,
@@ -48,7 +53,7 @@ struct Funny;
 
 #[group]
 #[description = "👻 Aqui estão algumas funções moderação da senhorita Perona 👻"]
-#[commands(ban)]
+#[commands(ban, kick)]
 struct Moderation;
 
 #[group]
@@ -78,6 +83,19 @@ impl EventHandler for Handler {
 			perona_println!(PeronaLoggerStatus::Warning, "Perona's shard resumed after reconnection, logging using trace: {:#?}", message);
 		});
 		// TODO: finish implementing resume event.
+	}
+}
+
+#[hook]
+async fn before_hook(_context: &Context, _message: &Message, command: &str) -> bool {
+	perona_println!(PeronaLoggerStatus::Debug, "running command now: [{}]", command);
+	return true;
+}
+
+#[hook]
+async fn after_hook(_context: &Context, _message: &Message, command: &str, result: Result<(), CommandError>) {
+	if let Err(why) = result {
+		perona_println!(PeronaLoggerStatus::Error, "An error occurred while running command: [{}]: {:#?}", command, why);
 	}
 }
 
@@ -114,6 +132,8 @@ async fn main() {
 				.on_mention(Some(UserId(application_id.parse::<u64>().unwrap())));
 			return configuraion;
 		})
+		.before(before_hook)
+		.after(after_hook)
 		.group(&FUNNY_GROUP)
 		.group(&MODERATION_GROUP)
 		.group(&UTILITIES_GROUP);

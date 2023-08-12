@@ -24,8 +24,8 @@ use crate::{
 #[only_in(guilds)]
 #[required_permissions(BAN_MEMBERS)]
 pub async fn ban(context: &Context, message: &Message, mut arguments: Args) -> CommandResult {
+	let duration = arguments.single::<u8>().unwrap_or(0);
 	let user_id = arguments.single::<UserId>().unwrap();
-	let duration = arguments.single::<u8>().unwrap_or(7);
 	let reason = arguments.remains();
 	if let Ok(member) = message.guild_id.unwrap().member(&context, user_id).await {
 		if let Some(reason) = reason {
