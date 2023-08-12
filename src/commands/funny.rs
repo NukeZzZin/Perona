@@ -19,9 +19,9 @@ use crate::utilities::functions::perona_default_embed;
 pub async fn dice(context: &Context, message: &Message, mut arguments: Args) -> CommandResult {
 	let argument = arguments.single::<u32>().unwrap_or(7);
 	let embed_content = perona_default_embed(&context,
-		String::from("👻 Resultado do dado jogado por Perona 👻"),
-			format!("🎲 O valor do dado jogador por perona : **_`{}`_**",
-				thread_rng().gen_range(1..=argument))
+		String::from("👻 Resultado do dado jogado pela Perona 👻"),
+		format!("🎲 O valor do dado jogador por perona : **_`{}`_**.",
+			thread_rng().gen_range(1..=argument))
 	).await;
 	message.channel_id.send_message(&context.http, |message| {
 		message.embed(|embed| {

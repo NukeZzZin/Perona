@@ -37,18 +37,24 @@ use crate::utilities::structures::{
 };
 use dotenv::dotenv;
 use crate::utilities::functions::PeronaLoggerStatus;
+use crate::commands::funny::*;
+use crate::commands::moderation::*;
 use crate::commands::utilities::*;
-use crate::commands::funnies::*;
+
+#[group]
+#[description = "👻 Aqui estão algumas funções divertidas da senhorita Perona 👻"]
+#[commands(dice)]
+struct Funny;
+
+#[group]
+#[description = "👻 Aqui estão algumas funções moderação da senhorita Perona 👻"]
+#[commands(ban)]
+struct Moderation;
 
 #[group]
 #[description = "👻 Aqui estão algumas funções utilitárias da senhorita Perona 👻"]
 #[commands(ping, invite, uptime)]
 struct Utilities;
-
-#[group]
-#[description = "👻 Aqui estão algumas funções divertidas da senhorita Perona 👻"]
-#[commands(dice)]
-struct Funnies;
 
 #[derive(Debug)]
 struct Handler;
@@ -108,8 +114,9 @@ async fn main() {
 				.on_mention(Some(UserId(application_id.parse::<u64>().unwrap())));
 			return configuraion;
 		})
-		.group(&UTILITIES_GROUP)
-		.group(&FUNNIES_GROUP);
+		.group(&FUNNY_GROUP)
+		.group(&MODERATION_GROUP)
+		.group(&UTILITIES_GROUP);
 	let intents = GatewayIntents::all();
 	let mut serenity_client = SerenityClient::builder(&token, intents)
 		.event_handler(Handler)

@@ -1,2 +1,3 @@
 pub mod utilities;
-pub mod funnies;
+pub mod funny;
+pub mod moderation;

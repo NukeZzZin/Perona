@@ -10,10 +10,7 @@ use serenity::{
 	prelude::Context
 };
 use crate::{
-	utilities::functions::{
-		perona_default_embed,
-		perona_format_time
-	},
+	utilities::functions::perona_default_embed,
 	UPTIME
 };
 use tokio::time::Instant;
@@ -73,11 +70,14 @@ pub async fn invite(context: &Context, message: &Message) -> CommandResult {
 pub async fn uptime(context: &Context, message: &Message) -> CommandResult {
 	let embed_content;
 	unsafe {
-		let now = UPTIME.unwrap().elapsed().unwrap();
+		let time = UPTIME.unwrap().elapsed().unwrap().as_millis();
 		embed_content = perona_default_embed(&context,
 			String::from("👻 Informações sobre o tempo de atividade da Perona 👻"),
-			format!("🕗 O tempo de atividade da Perona : **_`{}`_**.",
-				perona_format_time(now.as_secs()).await)
+			format!("🕗 O tempo de atividade da Perona : **_`{:02}d:{:02}h:{:02}m:{:02}s`_**.",
+				time / 86400,
+				(time % 86400) / 3600,
+				(time % 3600) / 60,
+				time % 60)
 		).await;
 	}
 	message.channel_id.send_message(&context.http, |message| {

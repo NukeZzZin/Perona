@@ -58,13 +58,3 @@ pub async fn perona_default_embed(context: &Context, title: String, description:
 		.timestamp(Utc::now());
 	return callback;
 }
-
-pub async fn perona_format_time(time: u64) -> String {
-	let callback = format!("{:02}d:{:02}h:{:02}m:{:02}s",
-		time / 86400, // * it's get uptime at days.
-		(time % 86400) / 3600, // * it's get uptime at hours.
-		(time % 3600) / 60, // * it's get uptime at minutes.
-		time % 60 // * it's get uptime at seconds.
-	);
-	return callback;
-}
