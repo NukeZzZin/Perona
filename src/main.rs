@@ -26,9 +26,9 @@ use serenity::{
 		UserId,
 		ResumedEvent
 	},
-	prelude::Context,
 	Client as SerenityClient,
 	client::EventHandler,
+	prelude::Context,
 };
 use mongodb::{
 	Client as MongodbClient,
@@ -41,27 +41,27 @@ use crate::utilities::structures::{
 	GuildsCollection,
 	GuildsCollectionContainer
 };
-use dotenv::dotenv;
 use crate::utilities::functions::{
 	PeronaLoggerStatus,
 	perona_default_embed
 };
+use dotenv::dotenv;
 use crate::commands::funny::*;
 use crate::commands::moderation::*;
 use crate::commands::utilities::*;
 
 #[group]
-#[description = "👻 Aqui estão algumas funções divertidas da senhorita Perona 👻"]
+#[description = "👯 Diversão - Este módulo possui alguns comandos que vão divertir todos do servidor."]
 #[commands(dice)]
 struct Funny;
 
 #[group]
-#[description = "👻 Aqui estão algumas funções moderação da senhorita Perona 👻"]
+#[description = "⚖️ Moderação - Este módulo possui alguns comandos que vão te ajudar a moderar seu servidor."]
 #[commands(ban, kick)]
 struct Moderation;
 
 #[group]
-#[description = "👻 Aqui estão algumas funções utilitárias da senhorita Perona 👻"]
+#[description = "👷 Utilitários - Este módulo possui alguns comandos diversos."]
 #[commands(ping, invite, uptime)]
 struct Utilities;
 
@@ -95,99 +95,113 @@ async fn dispatch_error(context: &Context, message: &Message, error: DispatchErr
 	match error {
 		DispatchError::Ratelimited(timeout) => {
 			let embed_content = perona_default_embed(&context,
-				String::from("👻 Não foi possível executar esté comando 👻"),
+				"👻 Não foi possível executar esté comando 👻",
 				format!("💔 Perece que você excedeu o meu **_`rate limit`_**.\n🩹 Por favor aguarde **_`{} segundos`_**.", timeout.as_secs())
 			).await;
-			drop(message.channel_id.send_message(&context.http, |message| {
-				message.embed(|embed| {
+			drop(message.channel_id.send_message(&context.http, |builder| {
+				builder.content(&message.author);
+				builder.reference_message(&message.clone());
+				builder.embed(|embed| {
 					embed.clone_from(&embed_content);
 					return embed;
 				});
-				return message;
+				return builder;
 			}).await.unwrap());
 			drop(embed_content);
 		},
 		DispatchError::LackingPermissions(permissions) => {
 			let embed_content = perona_default_embed(&context,
-				String::from("👻 Não foi possível executar esté comando 👻"),
-				format!("💔 Perece que você não tem as permissões necessárias.\n🩹 Para executar este comando você precisar ter essas permissões : **_`{}`_**", permissions)
+				"👻 Não foi possível executar esté comando 👻",
+				format!("💔 Perece que você não tem as permissões necessárias.\n🩹 Para executar este comando você precisar ter essas permissões: **_`{}`_**", permissions)
 			).await;
-			drop(message.channel_id.send_message(&context.http, |message| {
-				message.embed(|embed| {
+			drop(message.channel_id.send_message(&context.http, |builder| {
+				builder.content(&message.author);
+				builder.reference_message(&message.clone());
+				builder.embed(|embed| {
 					embed.clone_from(&embed_content);
 					return embed;
 				});
-				return message;
+				return builder;
 			}).await.unwrap());
 			drop(embed_content);
 		}
 		DispatchError::TooManyArguments { max, given } => {
 			let embed_content = perona_default_embed(&context,
-				String::from("👻 Não foi possível executar esté comando 👻"),
+				"👻 Não foi possível executar esté comando 👻",
 				format!("💔 Tente remover argumentos desnecessários.\n🩹 Foram recebidos **_`{}`_** argumentos e tem como máximo de **_`{}`_**.", given, max)
 			).await;
-			drop(message.channel_id.send_message(&context.http, |message| {
-				message.embed(|embed| {
+			drop(message.channel_id.send_message(&context.http, |builder| {
+				builder.content(&message.author);
+				builder.reference_message(&message.clone());
+				builder.embed(|embed| {
 					embed.clone_from(&embed_content);
 					return embed;
 				});
-				return message;
+				return builder;
 			}).await.unwrap());
 			drop(embed_content);
 		}
 		DispatchError::NotEnoughArguments { min, given } => {
 			let embed_content = perona_default_embed(&context,
-				String::from("👻 Não foi possível executar esté comando 👻"),
+				"👻 Não foi possível executar esté comando 👻",
 				format!("💔 Tente adicionar os argumentos necessários.\n🩹 Foram recebidos **_`{}`_** argumentos e são necessários **_`{}`_**.", given, min)
 			).await;
-			drop(message.channel_id.send_message(&context.http, |message| {
-				message.embed(|embed| {
+			drop(message.channel_id.send_message(&context.http, |builder| {
+				builder.content(&message.author);
+				builder.reference_message(&message.clone());
+				builder.embed(|embed| {
 					embed.clone_from(&embed_content);
 					return embed;
 				});
-				return message;
+				return builder;
 			}).await.unwrap());
 			drop(embed_content);
 		},
 		DispatchError::OnlyForDM => {
 			let embed_content = perona_default_embed(&context,
-				String::from("👻 Não foi possível executar esté comando 👻"),
-				String::from("💔 Esté comando é uso exclusivo dos para canal **_`DM`_**.\n")
+				"👻 Não foi possível executar esté comando 👻",
+				"💔 Esté comando é uso exclusivo dos para canal **_`DM`_**.\n"
 			).await;
-			drop(message.channel_id.send_message(&context.http, |message| {
-				message.embed(|embed| {
+			drop(message.channel_id.send_message(&context.http, |builder| {
+				builder.content(&message.author);
+				builder.reference_message(&message.clone());
+				builder.embed(|embed| {
 					embed.clone_from(&embed_content);
 					return embed;
 				});
-				return message;
+				return builder;
 			}).await.unwrap());
 			drop(embed_content);
 		}
 		DispatchError::OnlyForGuilds => {
 			let embed_content = perona_default_embed(&context,
-				String::from("👻 Não foi possível executar esté comando 👻"),
-				String::from("💔 Esté comando é uso exclusivo dos para canal **_`Guild`_**.\n")
+				"👻 Não foi possível executar esté comando 👻",
+				"💔 Esté comando é uso exclusivo dos para canal **_`Guild`_**.\n"
 			).await;
-			drop(message.channel_id.send_message(&context.http, |message| {
-				message.embed(|embed| {
+			drop(message.channel_id.send_message(&context.http, |builder| {
+				builder.content(&message.author);
+				builder.reference_message(&message.clone());
+				builder.embed(|embed| {
 					embed.clone_from(&embed_content);
 					return embed;
 				});
-				return message;
+				return builder;
 			}).await.unwrap());
 			drop(embed_content);
 		}
 		DispatchError::OnlyForOwners => {
 			let embed_content = perona_default_embed(&context,
-				String::from("👻 Não foi possível executar esté comando 👻"),
-				String::from("💔 Esté comando é uso exclusivo dos meus **_`desenvolvedores`_**.\n")
+				"👻 Não foi possível executar esté comando 👻",
+				"💔 Esté comando é uso exclusivo dos meus **_`desenvolvedores`_**.\n"
 			).await;
-			drop(message.channel_id.send_message(&context.http, |message| {
-				message.embed(|embed| {
+			drop(message.channel_id.send_message(&context.http, |builder| {
+				builder.content(&message.author);
+				builder.reference_message(&message.clone());
+				builder.embed(|embed| {
 					embed.clone_from(&embed_content);
 					return embed;
 				});
-				return message;
+				return builder;
 			}).await.unwrap());
 			drop(embed_content);
 		},
@@ -219,6 +233,7 @@ async fn main() {
 	dotenv().expect("[-] Failed to load environment file");
 	let token = var("DISCORD_TOKEN").expect("[-] Failed to find DISCORD_TOKEN in environment file");
 	let application_id = var("APPLICATION_ID").expect("[-] Failed to find APPLICATION_ID in environment file");
+	let application_owners = var("APPLICATION_OWNERS").expect("[-] Failed to find APPLICATION_OWNERS in environment file");
 	let database_uri = var("DATABASE_URI").expect("[-] Failed to find DATABASE_URI in environment file");
 	let database_config = ClientOptions::parse(&database_uri).await.unwrap();
 	let database_client = MongodbClient::with_options(database_config).unwrap();
@@ -234,9 +249,13 @@ async fn main() {
 	let framework = StandardFramework::new()
 		.configure(|configuraion| {
 			configuraion
-				.with_whitespace(false)
 				.prefix("P!")
+				.allow_dm(true)
+				.ignore_webhooks(true)
+				.ignore_bots(true)
+				.with_whitespace(false)
 				.case_insensitivity(true)
+				.owners(vec![UserId(application_owners.parse::<u64>().unwrap())].into_iter().collect())
 				.on_mention(Some(UserId(application_id.parse::<u64>().unwrap())));
 			return configuraion;
 		})
@@ -244,7 +263,8 @@ async fn main() {
 		.on_dispatch_error(dispatch_error)
 		.group(&FUNNY_GROUP)
 		.group(&MODERATION_GROUP)
-		.group(&UTILITIES_GROUP);
+		.group(&UTILITIES_GROUP)
+		.help(&HELP);
 	let intents = GatewayIntents::all();
 	let mut serenity_client = SerenityClient::builder(&token, intents)
 		.event_handler(Handler)
