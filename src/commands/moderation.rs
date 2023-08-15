@@ -36,7 +36,7 @@ pub async fn ban(context: &Context, message: &Message, mut arguments: Args) -> C
 			if user_id.0 == guild.to_guild_cached(&context).unwrap().owner_id.0 { // * it's verify if member is guild owner.
 				let embed_content = perona_default_embed(&context,
 					"👻 Não foi possível banir este membro 👻",
-					"❌ Não é possível banir este membro, pois ele é o dono do servidor."
+					"🩹 Não é possível banir este membro, pois ele é o dono do servidor."
 				).await;
 				message.channel_id.send_message(&context.http, |builder| {
 					builder.content(&message.author);
@@ -47,10 +47,11 @@ pub async fn ban(context: &Context, message: &Message, mut arguments: Args) -> C
 					});
 					return builder;
 				}).await.unwrap();
+				return CommandResult::Ok(());
 			} else if member.highest_role_info(context).unwrap().1 > author.highest_role_info(context).unwrap().1 { // * it's verify if (author.role > member.role).
 				let embed_content = perona_default_embed(&context,
 					"👻 Não foi possível banir este membro 👻",
-					"❌ Falta-lhe permissão para banir este membro."
+					"🩹 Falta-lhe permissão para banir este membro."
 				).await;
 				message.channel_id.send_message(&context.http, |builder| {
 					builder.content(&message.author);
@@ -61,6 +62,7 @@ pub async fn ban(context: &Context, message: &Message, mut arguments: Args) -> C
 					});
 					return builder;
 				}).await.unwrap();
+				return CommandResult::Ok(());
 			}
 		}
 		if let Some(reason) = reason { // * it's verify if exists reason to ban.
@@ -68,7 +70,7 @@ pub async fn ban(context: &Context, message: &Message, mut arguments: Args) -> C
 				perona_println!(PeronaLoggerStatus::Error, "An error occurred while running command: {:#?}", why);
 				let embed_content = perona_default_embed(&context,
 					"👻 Não foi possível banir este membro 👻",
-					"❌ Ao tentar banir este membro enfrentei alguns problemas."
+					"🩹 Ao tentar banir este membro enfrentei alguns problemas."
 				).await;
 				message.channel_id.send_message(&context.http, |builder| {
 					builder.content(&message.author);
@@ -79,67 +81,71 @@ pub async fn ban(context: &Context, message: &Message, mut arguments: Args) -> C
 					});
 					return builder;
 				}).await.unwrap();
+				return CommandResult::Ok(());
 			} else {
-					let embed_content = perona_default_embed(&context,
-						"👻 O membro foi banido pela Perona 👻",
-						format!("🔨 Membro foi banido pelo ID: **_`{}`_**.\n📅 Membro foi banido pelo tempo: **_`{} dias`_**.\n📜 Membro foi banido pelo movito: **_`{}`_**.",
-							user_id.0, duration, reason)
-					).await;
-					message.channel_id.send_message(&context.http, |builder| {
-						builder.embed(|embed| {
-							embed.clone_from(&embed_content);
-							return embed;
-						});
-						return builder;
-					}).await.unwrap();
-				}
-			} else {
-				if let Err(why) = member.ban(&context, duration).await { // * it's get callback from 'ban' function.
-					perona_println!(PeronaLoggerStatus::Error, "An error occurred while running command: {:#?}", why);
-					let embed_content = perona_default_embed(&context,
-						"👻 Não foi possível banir este membro 👻",
-						"❌ Ao tentar banir este membro enfrentei alguns problemas."
-					).await;
-					message.channel_id.send_message(&context.http, |builder| {
-						builder.content(&message.author);
-						builder.reference_message(&message.clone());
-						builder.embed(|embed| {
-							embed.clone_from(&embed_content);
-							return embed;
-						});
-						return builder;
-					}).await.unwrap();
-				} else {
-					let embed_content = perona_default_embed(&context,
-						"👻 O membro foi banido pela Perona 👻",
-						format!("🔨 Membro foi banido pelo ID: **_`{}`_**.\n📅 Membro foi banido pelo tempo: **_`{} dias`_**.",
-							user_id.0, duration)
-					).await;
-					message.channel_id.send_message(&context.http, |builder| {
-						builder.embed(|embed| {
-							embed.clone_from(&embed_content);
-							return embed;
-						});
-						return builder;
-					}).await.unwrap();
-				}
+				let embed_content = perona_default_embed(&context,
+					"👻 O membro foi banido pela Perona 👻",
+					format!("🔨 Membro foi banido pelo ID: **_`{}`_**.\n📅 Membro foi banido pelo tempo: **_`{} dias`_**.\n📜 Membro foi banido pelo movito: **_`{}`_**.",
+						user_id.0, duration, reason)
+				).await;
+				message.channel_id.send_message(&context.http, |builder| {
+					builder.embed(|embed| {
+						embed.clone_from(&embed_content);
+						return embed;
+					});
+					return builder;
+				}).await.unwrap();
+				return CommandResult::Ok(());
 			}
 		} else {
-			let embed_content = perona_default_embed(&context,
-				"👻 Não foi possível banir este membro 👻",
-				"❌ Não foi possível banir este membro, pois este membro não existe no servidor."
-			).await;
-			message.channel_id.send_message(&context.http, |builder| {
-				builder.content(&message.author);
-				builder.reference_message(&message.clone());
-				builder.embed(|embed| {
-					embed.clone_from(&embed_content);
-					return embed;
-				});
-				return builder;
-			}).await.unwrap();
+			if let Err(why) = member.ban(&context, duration).await { // * it's get callback from 'ban' function.
+				perona_println!(PeronaLoggerStatus::Error, "An error occurred while running command: {:#?}", why);
+				let embed_content = perona_default_embed(&context,
+					"👻 Não foi possível banir este membro 👻",
+					"🩹 Ao tentar banir este membro enfrentei alguns problemas."
+				).await;
+				message.channel_id.send_message(&context.http, |builder| {
+					builder.content(&message.author);
+					builder.reference_message(&message.clone());
+					builder.embed(|embed| {
+						embed.clone_from(&embed_content);
+						return embed;
+					});
+					return builder;
+				}).await.unwrap();
+				return CommandResult::Ok(());
+			} else {
+				let embed_content = perona_default_embed(&context,
+					"👻 O membro foi banido pela Perona 👻",
+					format!("🔨 Membro foi banido pelo ID: **_`{}`_**.\n📅 Membro foi banido pelo tempo: **_`{} dias`_**.",
+						user_id.0, duration)
+				).await;
+				message.channel_id.send_message(&context.http, |builder| {
+					builder.embed(|embed| {
+						embed.clone_from(&embed_content);
+						return embed;
+					});
+					return builder;
+				}).await.unwrap();
+				return CommandResult::Ok(());
+			}
 		}
-	return CommandResult::Ok(());
+	} else {
+		let embed_content = perona_default_embed(&context,
+			"👻 Não foi possível banir este membro 👻",
+			"🩹 Não foi possível banir este membro, pois este membro não existe no servidor."
+		).await;
+		message.channel_id.send_message(&context.http, |builder| {
+			builder.content(&message.author);
+			builder.reference_message(&message.clone());
+			builder.embed(|embed| {
+				embed.clone_from(&embed_content);
+				return embed;
+			});
+			return builder;
+		}).await.unwrap();
+		return CommandResult::Ok(());
+	}
 }
 
 #[command]
@@ -157,7 +163,7 @@ pub async fn kick(context: &Context, message: &Message, mut arguments: Args) -> 
 			if user_id.0 == guild.to_guild_cached(&context).unwrap().owner_id.0 { // * it's verify if member is guild owner.
 				let embed_content = perona_default_embed(&context,
 					"👻 Não foi possível expulsar este membro 👻",
-					"❌ Não é possível expulsar este membro, pois ele é o dono do servidor."
+					"🩹 Não é possível expulsar este membro, pois ele é o dono do servidor."
 				).await;
 				message.channel_id.send_message(&context.http, |builder| {
 					builder.content(&message.author);
@@ -168,10 +174,11 @@ pub async fn kick(context: &Context, message: &Message, mut arguments: Args) -> 
 					});
 					return builder;
 				}).await.unwrap();
+				return CommandResult::Ok(());
 			} else if member.highest_role_info(context).unwrap().1 > author.highest_role_info(context).unwrap().1 { // * it's verify if (author.role > member.role).
 				let embed_content = perona_default_embed(&context,
 					"👻 Não foi possível expulsar este membro 👻",
-					"❌ Falta-lhe permissão para expulsar este membro."
+					"🩹 Falta-lhe permissão para expulsar este membro."
 				).await;
 				message.channel_id.send_message(&context.http, |builder| {
 					builder.content(&message.author);
@@ -182,10 +189,11 @@ pub async fn kick(context: &Context, message: &Message, mut arguments: Args) -> 
 					});
 					return builder;
 				}).await.unwrap();
+				return CommandResult::Ok(());
 			}
 		}
-		if let Some(reason) = reason { // * it's verify if exists reason to kick.
-			if let Err(why) = member.kick_with_reason(&context.http, reason).await { // * it's get callback from 'kick_with_reason' function.
+		if let Some(reason) = reason { // * it's verify if exists reason to ban.
+			if let Err(why) = member.kick_with_reason(&context, reason).await { // * it's get callback from 'ban_with_reason' function.
 				perona_println!(PeronaLoggerStatus::Error, "An error occurred while running command: {:#?}", why);
 				let embed_content = perona_default_embed(&context,
 					"👻 Não foi possível expulsar este membro 👻",
@@ -200,10 +208,11 @@ pub async fn kick(context: &Context, message: &Message, mut arguments: Args) -> 
 					});
 					return builder;
 				}).await.unwrap();
+				return CommandResult::Ok(());
 			} else {
 				let embed_content = perona_default_embed(&context,
 					"👻 O membro foi expulso pela Perona 👻",
-					format!("🔨 Membro foi expulso pelo ID: **_`{}`_**.\n📜 Membro foi expulso pelo movito: **_`{}`_**.",
+					format!("🦵🏻 Membro foi expulso pelo ID: **_`{}`_**.\n📜 Membro foi banido pelo movito: **_`{}`_**.",
 						user_id.0, reason)
 				).await;
 				message.channel_id.send_message(&context.http, |builder| {
@@ -213,9 +222,10 @@ pub async fn kick(context: &Context, message: &Message, mut arguments: Args) -> 
 					});
 					return builder;
 				}).await.unwrap();
+				return CommandResult::Ok(());
 			}
 		} else {
-			if let Err(why) = member.kick(&context.http).await { // * it's get callback from 'kick' function.
+			if let Err(why) = member.kick(&context).await { // * it's get callback from 'ban' function.
 				perona_println!(PeronaLoggerStatus::Error, "An error occurred while running command: {:#?}", why);
 				let embed_content = perona_default_embed(&context,
 					"👻 Não foi possível expulsar este membro 👻",
@@ -230,10 +240,11 @@ pub async fn kick(context: &Context, message: &Message, mut arguments: Args) -> 
 					});
 					return builder;
 				}).await.unwrap();
+				return CommandResult::Ok(());
 			} else {
 				let embed_content = perona_default_embed(&context,
 					"👻 O membro foi expulso pela Perona 👻",
-					format!("🔨 Membro foi expulso pelo ID: **_`{}`_**.",
+					format!("🦵🏻 Membro foi expulso pelo ID: **_`{}`_**.",
 						user_id.0)
 				).await;
 				message.channel_id.send_message(&context.http, |builder| {
@@ -243,8 +254,23 @@ pub async fn kick(context: &Context, message: &Message, mut arguments: Args) -> 
 					});
 					return builder;
 				}).await.unwrap();
+				return CommandResult::Ok(());
 			}
 		}
+	} else {
+		let embed_content = perona_default_embed(&context,
+			"👻 Não foi possível banir este membro 👻",
+			"🩹 Não foi possível banir este membro, pois este membro não existe no servidor."
+		).await;
+		message.channel_id.send_message(&context.http, |builder| {
+			builder.content(&message.author);
+			builder.reference_message(&message.clone());
+			builder.embed(|embed| {
+				embed.clone_from(&embed_content);
+				return embed;
+			});
+			return builder;
+		}).await.unwrap();
+		return CommandResult::Ok(());
 	}
-	return CommandResult::Ok(());
 }
