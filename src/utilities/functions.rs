@@ -41,7 +41,7 @@ macro_rules! perona_println {
 						println!("[\x1b[1;36mDEBUG\x1b[0m] (\x1b[1;90m{}\x1b[0m) - [{}:{}] {}.", timestamp, file!(), line!(), format_args!($($arg)*));
 					},
 					PeronaLoggerStatus::Fatal => {
-						println!("[\x1b[1;91mFATAL\x1b[0m] (\x1b[1;90m{}\x1b[0m) - {}.", timestamp, format_args!($($arg)*));
+						eprintln!("[\x1b[1;91mFATAL\x1b[0m] (\x1b[1;90m{}\x1b[0m) - {}.", timestamp, format_args!($($arg)*));
 						std::process::exit(0x5442 as i32); // TODO: define perona return status codes
 					}
 				}
@@ -61,7 +61,7 @@ where
 		.author(|author| author.name(title.to_string()))
 		.description(description.to_string())
 		.thumbnail("https://i.imgur.com/MYNjFgT.gif") // TODO: define it with default thumbnail image for embeds
-		.color(0xCC_66_99u32)
+		.color(0xD6_85_AD as u32) // * it's field working with (0x00_00_00) - (0xRR_GG_BB).
 		.footer(|footer| footer.text("Senhorita Perona's").icon_url(&perona_image))
 		.timestamp(Utc::now());
 	return callback;

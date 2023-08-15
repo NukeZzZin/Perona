@@ -24,11 +24,45 @@ use crate::{
 #[only_in(guilds)]
 #[required_permissions(BAN_MEMBERS)]
 #[min_args(1)]
+#[description("🔨 Este comando faz com que o usuário seja banido por min.")]
+#[usage("ban <user> [duration] [reason]")]
 pub async fn ban(context: &Context, message: &Message, mut arguments: Args) -> CommandResult {
 	let duration = arguments.single::<u8>().unwrap_or(0);
 	let user_id = arguments.single::<UserId>().unwrap();
 	let reason = arguments.remains();
 	if let Ok(member) = message.guild_id.unwrap().member(&context, user_id).await { // * it's get member from guild.
+		if let Some(guild) = message.guild_id {
+			let author = guild.member(&context, message.author.id.0).await.unwrap();
+			if user_id.0 == guild.to_guild_cached(&context).unwrap().owner_id.0 { // * it's verify if member is guild owner.
+				let embed_content = perona_default_embed(&context,
+					"👻 Não foi possível banir este membro 👻",
+					"❌ Não é possível banir este membro, pois ele é o dono do servidor."
+				).await;
+				message.channel_id.send_message(&context.http, |builder| {
+					builder.content(&message.author);
+					builder.reference_message(&message.clone());
+					builder.embed(|embed| {
+						embed.clone_from(&embed_content);
+						return embed;
+					});
+					return builder;
+				}).await.unwrap();
+			} else if member.highest_role_info(context).unwrap().1 > author.highest_role_info(context).unwrap().1 { // * it's verify if (author.role > member.role).
+				let embed_content = perona_default_embed(&context,
+					"👻 Não foi possível banir este membro 👻",
+					"❌ Falta-lhe permissão para banir este membro."
+				).await;
+				message.channel_id.send_message(&context.http, |builder| {
+					builder.content(&message.author);
+					builder.reference_message(&message.clone());
+					builder.embed(|embed| {
+						embed.clone_from(&embed_content);
+						return embed;
+					});
+					return builder;
+				}).await.unwrap();
+			}
+		}
 		if let Some(reason) = reason { // * it's verify if exists reason to ban.
 			if let Err(why) = member.ban_with_reason(&context, duration, reason).await { // * it's get callback from 'ban_with_reason' function.
 				perona_println!(PeronaLoggerStatus::Error, "An error occurred while running command: {:#?}", why);
@@ -112,10 +146,44 @@ pub async fn ban(context: &Context, message: &Message, mut arguments: Args) -> C
 #[only_in(guilds)]
 #[required_permissions(KICK_MEMBERS)]
 #[min_args(1)]
+#[description("🦵🏻 Este comando faz com que o usuário seja expulso por min.")]
+#[usage("kick <user> [reason]")]
 pub async fn kick(context: &Context, message: &Message, mut arguments: Args) -> CommandResult {
 	let user_id = arguments.single::<UserId>().unwrap();
 	let reason = arguments.remains();
 	if let Ok(member) = message.guild_id.unwrap().member(&context, user_id).await { // * it's get member from guild.
+		if let Some(guild) = message.guild_id {
+			let author = guild.member(&context, message.author.id.0).await.unwrap();
+			if user_id.0 == guild.to_guild_cached(&context).unwrap().owner_id.0 { // * it's verify if member is guild owner.
+				let embed_content = perona_default_embed(&context,
+					"👻 Não foi possível expulsar este membro 👻",
+					"❌ Não é possível expulsar este membro, pois ele é o dono do servidor."
+				).await;
+				message.channel_id.send_message(&context.http, |builder| {
+					builder.content(&message.author);
+					builder.reference_message(&message.clone());
+					builder.embed(|embed| {
+						embed.clone_from(&embed_content);
+						return embed;
+					});
+					return builder;
+				}).await.unwrap();
+			} else if member.highest_role_info(context).unwrap().1 > author.highest_role_info(context).unwrap().1 { // * it's verify if (author.role > member.role).
+				let embed_content = perona_default_embed(&context,
+					"👻 Não foi possível expulsar este membro 👻",
+					"❌ Falta-lhe permissão para expulsar este membro."
+				).await;
+				message.channel_id.send_message(&context.http, |builder| {
+					builder.content(&message.author);
+					builder.reference_message(&message.clone());
+					builder.embed(|embed| {
+						embed.clone_from(&embed_content);
+						return embed;
+					});
+					return builder;
+				}).await.unwrap();
+			}
+		}
 		if let Some(reason) = reason { // * it's verify if exists reason to kick.
 			if let Err(why) = member.kick_with_reason(&context.http, reason).await { // * it's get callback from 'kick_with_reason' function.
 				perona_println!(PeronaLoggerStatus::Error, "An error occurred while running command: {:#?}", why);
