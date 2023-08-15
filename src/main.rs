@@ -51,17 +51,17 @@ use crate::commands::moderation::*;
 use crate::commands::utilities::*;
 
 #[group]
-#[description = "👯 Diversão - Este módulo possui alguns comandos que vão divertir todos do servidor."]
+#[description = "👯 Diversão - Este módulo possui alguns comandos que vão divertir todos do servidor:"]
 #[commands(dice)]
 struct Funny;
 
 #[group]
-#[description = "⚖️ Moderação - Este módulo possui alguns comandos que vão te ajudar a moderar seu servidor."]
+#[description = "⚖️ Moderação - Este módulo possui alguns comandos que vão te ajudar a moderar seu servidor:"]
 #[commands(ban, kick)]
 struct Moderation;
 
 #[group]
-#[description = "👷 Utilitários - Este módulo possui alguns comandos diversos."]
+#[description = "👷 Utilitários - Este módulo possui alguns comandos diversos:"]
 #[commands(ping, invite, uptime)]
 struct Utilities;
 
