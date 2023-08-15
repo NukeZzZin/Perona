@@ -193,7 +193,7 @@ pub async fn kick(context: &Context, message: &Message, mut arguments: Args) -> 
 			}
 		}
 		if let Some(reason) = reason { // * it's verify if exists reason to ban.
-			if let Err(why) = member.kick_with_reason(&context, reason).await { // * it's get callback from 'ban_with_reason' function.
+			if let Err(why) = member.kick_with_reason(&context, reason).await { // * it's get callback from 'kick_with_reason' function.
 				perona_println!(PeronaLoggerStatus::Error, "An error occurred while running command: {:#?}", why);
 				let embed_content = perona_default_embed(&context,
 					"👻 Não foi possível expulsar este membro 👻",
@@ -225,7 +225,7 @@ pub async fn kick(context: &Context, message: &Message, mut arguments: Args) -> 
 				return CommandResult::Ok(());
 			}
 		} else {
-			if let Err(why) = member.kick(&context).await { // * it's get callback from 'ban' function.
+			if let Err(why) = member.kick(&context).await { // * it's get callback from 'kick' function.
 				perona_println!(PeronaLoggerStatus::Error, "An error occurred while running command: {:#?}", why);
 				let embed_content = perona_default_embed(&context,
 					"👻 Não foi possível expulsar este membro 👻",
