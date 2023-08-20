@@ -3,8 +3,6 @@ name: Docker Continuous Integration
 on:
     push:
         branches: [ "master" ]
-    pull_request:
-        branches: [ "master" ]
 
 jobs:
     docker:
@@ -21,13 +19,13 @@ jobs:
                 DATABASE_URI: ${{ secrets.DATABASE_URI }}
                 DATABASE_TEST_URI: ${{ secrets.DATABASE_TEST_URI }}
               run: |
-                echo "DISCORD_TOKEN=${DISCORD_TOKEN}" > .env.production
-                echo "APPLICATION_ID=${APPLICATION_ID}" >> .env.production
-                echo "PUBLIC_KEY=${PUBLIC_KEY}" >> .env.production
-                echo "CLIENT_SECRET=${CLIENT_SECRET}" >> .env.production
-                echo "APPLICATION_OWNERS=${APPLICATION_OWNERS}" >> .env.production
-                echo "DATABASE_URI=${DATABASE_URI}" >> .env.production
-                echo "DATABASE_TEST_URI=${DATABASE_TEST_URI}" >> .env.production
+                echo "DISCORD_TOKEN=${DISCORD_TOKEN}" > .env
+                echo "APPLICATION_ID=${APPLICATION_ID}" >> .env
+                echo "PUBLIC_KEY=${PUBLIC_KEY}" >> .env
+                echo "CLIENT_SECRET=${CLIENT_SECRET}" >> .env
+                echo "APPLICATION_OWNERS=${APPLICATION_OWNERS}" >> .env
+                echo "DATABASE_URI=${DATABASE_URI}" >> .env
+                echo "DATABASE_TEST_URI=${DATABASE_TEST_URI}" >> .env
 
             - uses: actions/checkout@v3
             - name: Building and Tagging Docker Image
