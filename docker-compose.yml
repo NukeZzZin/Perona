@@ -20,7 +20,7 @@ services:
             - DATABASE_URI=mongodb://localhost:27017/perona_database
             - DATABASE_TEST_URI=mongodb://localhost:27017/perona_database
         env_file:
-            - .env
+            - .env.production
 volumes:
     perona_database:
         name: perona_database

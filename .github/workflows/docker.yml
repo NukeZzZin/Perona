@@ -11,6 +11,24 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:
+            - name: Setting Environment and Creating Environment file
+              env:
+                DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+                APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
+                PUBLIC_KEY: ${{ secrets.PUBLIC_KEY }}
+                CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+                APPLICATION_OWNERS: ${{ secrets.APPLICATION_OWNERS }}
+                DATABASE_URI: ${{ secrets.DATABASE_URI }}
+                DATABASE_TEST_URI: ${{ secrets.DATABASE_TEST_URI }}
+              run: |
+                echo "DISCORD_TOKEN=${DISCORD_TOKEN}" > .env.production
+                echo "APPLICATION_ID=${APPLICATION_ID}" >> .env.production
+                echo "PUBLIC_KEY=${PUBLIC_KEY}" >> .env.production
+                echo "CLIENT_SECRET=${CLIENT_SECRET}" >> .env.production
+                echo "APPLICATION_OWNERS=${APPLICATION_OWNERS}" >> .env.production
+                echo "DATABASE_URI=${DATABASE_URI}" >> .env.production
+                echo "DATABASE_TEST_URI=${DATABASE_TEST_URI}" >> .env.production
+
             - uses: actions/checkout@v3
             - name: Building and Tagging Docker Image
               run: |
@@ -24,4 +42,4 @@ jobs:
                 docker save -o ./output/perona_client.tar perona_client:deploy-$GITHUB_SHA
                 docker save -o ./output/perona_database.tar perona_database:deploy-$GITHUB_SHA
 
-            # TODO: urgently implement ssh connection with server to complete ci.
+            # TODO: urgently implement connection with server to complete deploy.
