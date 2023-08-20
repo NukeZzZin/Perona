@@ -21,7 +21,7 @@ This project is just a simple discord bot, made in **_Rust_** using **_Serenity_
 
 #### 🐱‍💻 **_Local Developing run_**
 
-1. Use **_`cargo run --verbose`_** in your terminal.
+1. Use **_`cargo run`_** in your terminal.
 
 #### 🏎️ **_Local production run_**
 

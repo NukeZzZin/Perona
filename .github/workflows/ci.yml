@@ -15,12 +15,12 @@ jobs:
         steps:
             - uses: actions/checkout@v3
 
-            - name: Testing project
+            - name: Testing Project
               run: |
                 cargo check --verbose
                 cargo test --all --verbose
 
-            - name: Building project
+            - name: Building Project
               run: |
                 cargo check --verbose
                 cargo build --verbose

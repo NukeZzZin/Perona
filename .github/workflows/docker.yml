@@ -1,0 +1,27 @@
+name: Docker Continuous Integration
+
+on:
+    push:
+        branches: [ "master" ]
+    pull_request:
+        branches: [ "master" ]
+
+jobs:
+    docker:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v3
+            - name: Building and Tagging Docker Image
+              run: |
+                docker-compose build
+                docker tag perona_client:latest perona_client:deploy-$GITHUB_SHA
+                docker tag mongo:4.4.6 perona_database:deploy-$GITHUB_SHA
+
+            - name: Generate Docker Image File
+              run: |
+                mkdir -p ./output
+                docker save -o ./output/perona_client.tar perona_client:deploy-$GITHUB_SHA
+                docker save -o ./output/perona_database.tar perona_database:deploy-$GITHUB_SHA
+
+            # TODO: urgently implement ssh connection with server to complete ci.
