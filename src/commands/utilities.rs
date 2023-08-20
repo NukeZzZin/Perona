@@ -37,12 +37,12 @@ pub async fn ping(context: &Context, message: &Message) -> CommandResult {
 		return builder;
 	}).await.unwrap();
 	let response_latency_end = response_latency_start.elapsed();
-	drop(response_latency_start); // * it's drop response_latency_start from memory.
+	// drop(response_latency_start); // * it's drop response_latency_start from memory.
 	// * it's get gateway latency from elapsed time in ping geteway.
 	let gateway_latency_start = Instant::now();
     context.http.get_gateway().await.unwrap();
     let gateway_latency_end = gateway_latency_start.elapsed();
-	drop(gateway_latency_start); // * it's drop gateway_latency_start from memory.
+	// drop(gateway_latency_start); // * it's drop gateway_latency_start from memory.
 	let embed_content = perona_default_embed(&context,
 		"👻 Informações sobre a minha latência 👻",
 		format!("🎈 Latência do getaway: **_`{}ms`_**.\n🔥 Latência da api: **_`{}ms`_**.",

@@ -98,7 +98,7 @@ async fn dispatch_error(context: &Context, message: &Message, error: DispatchErr
 				"👻 Não foi possível executar esté comando 👻",
 				format!("💔 Perece que você excedeu o meu **_`rate limit`_**.\n🩹 Por favor aguarde **_`{} segundos`_**.", timeout.as_secs())
 			).await;
-			drop(message.channel_id.send_message(&context.http, |builder| {
+			message.channel_id.send_message(&context.http, |builder| {
 				builder.content(&message.author);
 				builder.reference_message(&message.clone());
 				builder.embed(|embed| {
@@ -106,15 +106,14 @@ async fn dispatch_error(context: &Context, message: &Message, error: DispatchErr
 					return embed;
 				});
 				return builder;
-			}).await.unwrap());
-			drop(embed_content);
+			}).await.unwrap();
 		},
 		DispatchError::LackingPermissions(permissions) => {
 			let embed_content = perona_default_embed(&context,
 				"👻 Não foi possível executar esté comando 👻",
 				format!("💔 Perece que você não tem as permissões necessárias.\n🩹 Para executar este comando você precisar ter essas permissões: **_`{}`_**", permissions)
 			).await;
-			drop(message.channel_id.send_message(&context.http, |builder| {
+			message.channel_id.send_message(&context.http, |builder| {
 				builder.content(&message.author);
 				builder.reference_message(&message.clone());
 				builder.embed(|embed| {
@@ -122,15 +121,14 @@ async fn dispatch_error(context: &Context, message: &Message, error: DispatchErr
 					return embed;
 				});
 				return builder;
-			}).await.unwrap());
-			drop(embed_content);
+			}).await.unwrap();
 		}
 		DispatchError::TooManyArguments { max, given } => {
 			let embed_content = perona_default_embed(&context,
 				"👻 Não foi possível executar esté comando 👻",
 				format!("💔 Tente remover argumentos desnecessários.\n🩹 Foram recebidos **_`{}`_** argumentos e tem como máximo de **_`{}`_**.", given, max)
 			).await;
-			drop(message.channel_id.send_message(&context.http, |builder| {
+			message.channel_id.send_message(&context.http, |builder| {
 				builder.content(&message.author);
 				builder.reference_message(&message.clone());
 				builder.embed(|embed| {
@@ -138,15 +136,14 @@ async fn dispatch_error(context: &Context, message: &Message, error: DispatchErr
 					return embed;
 				});
 				return builder;
-			}).await.unwrap());
-			drop(embed_content);
+			}).await.unwrap();
 		}
 		DispatchError::NotEnoughArguments { min, given } => {
 			let embed_content = perona_default_embed(&context,
 				"👻 Não foi possível executar esté comando 👻",
 				format!("💔 Tente adicionar os argumentos necessários.\n🩹 Foram recebidos **_`{}`_** argumentos e são necessários **_`{}`_**.", given, min)
 			).await;
-			drop(message.channel_id.send_message(&context.http, |builder| {
+			message.channel_id.send_message(&context.http, |builder| {
 				builder.content(&message.author);
 				builder.reference_message(&message.clone());
 				builder.embed(|embed| {
@@ -154,15 +151,14 @@ async fn dispatch_error(context: &Context, message: &Message, error: DispatchErr
 					return embed;
 				});
 				return builder;
-			}).await.unwrap());
-			drop(embed_content);
+			}).await.unwrap();
 		},
 		DispatchError::OnlyForDM => {
 			let embed_content = perona_default_embed(&context,
 				"👻 Não foi possível executar esté comando 👻",
 				"💔 Esté comando é uso exclusivo dos para canal **_`DM`_**.\n"
 			).await;
-			drop(message.channel_id.send_message(&context.http, |builder| {
+			message.channel_id.send_message(&context.http, |builder| {
 				builder.content(&message.author);
 				builder.reference_message(&message.clone());
 				builder.embed(|embed| {
@@ -170,15 +166,14 @@ async fn dispatch_error(context: &Context, message: &Message, error: DispatchErr
 					return embed;
 				});
 				return builder;
-			}).await.unwrap());
-			drop(embed_content);
+			}).await.unwrap();
 		}
 		DispatchError::OnlyForGuilds => {
 			let embed_content = perona_default_embed(&context,
 				"👻 Não foi possível executar esté comando 👻",
 				"💔 Esté comando é uso exclusivo dos para canal **_`Guild`_**.\n"
 			).await;
-			drop(message.channel_id.send_message(&context.http, |builder| {
+			message.channel_id.send_message(&context.http, |builder| {
 				builder.content(&message.author);
 				builder.reference_message(&message.clone());
 				builder.embed(|embed| {
@@ -186,15 +181,14 @@ async fn dispatch_error(context: &Context, message: &Message, error: DispatchErr
 					return embed;
 				});
 				return builder;
-			}).await.unwrap());
-			drop(embed_content);
+			}).await.unwrap();
 		}
 		DispatchError::OnlyForOwners => {
 			let embed_content = perona_default_embed(&context,
 				"👻 Não foi possível executar esté comando 👻",
 				"💔 Esté comando é uso exclusivo dos meus **_`desenvolvedores`_**.\n"
 			).await;
-			drop(message.channel_id.send_message(&context.http, |builder| {
+			message.channel_id.send_message(&context.http, |builder| {
 				builder.content(&message.author);
 				builder.reference_message(&message.clone());
 				builder.embed(|embed| {
@@ -202,8 +196,7 @@ async fn dispatch_error(context: &Context, message: &Message, error: DispatchErr
 					return embed;
 				});
 				return builder;
-			}).await.unwrap());
-			drop(embed_content);
+			}).await.unwrap();
 		},
 		_ => {
 			perona_println!(PeronaLoggerStatus::Error, "An error occurred while running command: [{}]: {:#?}", command, error)
@@ -230,7 +223,7 @@ async fn main() {
 		// let trace = std::backtrace::Backtrace::force_capture();
 		// TODO: implement hook for logger.
 	}
-	dotenv().expect("[-] Failed to load environment file");
+	dotenv().ok();
 	let token = var("DISCORD_TOKEN").expect("[-] Failed to find DISCORD_TOKEN in environment file");
 	let application_id = var("APPLICATION_ID").expect("[-] Failed to find APPLICATION_ID in environment file");
 	let application_owners = var("APPLICATION_OWNERS").expect("[-] Failed to find APPLICATION_OWNERS in environment file");

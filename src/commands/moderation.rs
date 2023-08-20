@@ -32,7 +32,7 @@ pub async fn ban(context: &Context, message: &Message, mut arguments: Args) -> C
 	let reason = arguments.remains();
 	if let Ok(member) = message.guild_id.unwrap().member(&context, user_id).await { // * it's get member from guild.
 		if let Some(guild) = message.guild_id {
-			let author = guild.member(&context, message.author.id.0).await.unwrap();
+			let author = guild.member(&context, message.author.id.0).await.unwrap(); // * it's get member of message author from guild.
 			if user_id.0 == guild.to_guild_cached(&context).unwrap().owner_id.0 { // * it's verify if member is guild owner.
 				let embed_content = perona_default_embed(&context,
 					"👻 Não foi possível banir este membro 👻",
@@ -159,7 +159,7 @@ pub async fn kick(context: &Context, message: &Message, mut arguments: Args) -> 
 	let reason = arguments.remains();
 	if let Ok(member) = message.guild_id.unwrap().member(&context, user_id).await { // * it's get member from guild.
 		if let Some(guild) = message.guild_id {
-			let author = guild.member(&context, message.author.id.0).await.unwrap();
+			let author = guild.member(&context, message.author.id.0).await.unwrap(); // * it's get member of message author from guild.
 			if user_id.0 == guild.to_guild_cached(&context).unwrap().owner_id.0 { // * it's verify if member is guild owner.
 				let embed_content = perona_default_embed(&context,
 					"👻 Não foi possível expulsar este membro 👻",

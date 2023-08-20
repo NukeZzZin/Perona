@@ -1,0 +1,43 @@
+name: Docker Continuous Integration
+
+on:
+    push:
+        branches: [ "master" ]
+
+jobs:
+    docker:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Setting Environment and Creating Environment file
+              env:
+                DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+                APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
+                PUBLIC_KEY: ${{ secrets.PUBLIC_KEY }}
+                CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+                APPLICATION_OWNERS: ${{ secrets.APPLICATION_OWNERS }}
+                DATABASE_URI: ${{ secrets.DATABASE_URI }}
+                DATABASE_TEST_URI: ${{ secrets.DATABASE_TEST_URI }}
+              run: |
+                echo "DISCORD_TOKEN=${DISCORD_TOKEN}" > .env
+                echo "APPLICATION_ID=${APPLICATION_ID}" >> .env
+                echo "PUBLIC_KEY=${PUBLIC_KEY}" >> .env
+                echo "CLIENT_SECRET=${CLIENT_SECRET}" >> .env
+                echo "APPLICATION_OWNERS=${APPLICATION_OWNERS}" >> .env
+                echo "DATABASE_URI=${DATABASE_URI}" >> .env
+                echo "DATABASE_TEST_URI=${DATABASE_TEST_URI}" >> .env
+
+            - uses: actions/checkout@v3
+            - name: Building and Tagging Docker Image
+              run: |
+                docker-compose build
+                docker tag perona_client:latest perona_client:deploy-$GITHUB_SHA
+                docker tag mongo:4.4.6 perona_database:deploy-$GITHUB_SHA
+
+            - name: Generate Docker Image File
+              run: |
+                mkdir -p ./output
+                docker save -o ./output/perona_client.tar perona_client:deploy-$GITHUB_SHA
+                docker save -o ./output/perona_database.tar perona_database:deploy-$GITHUB_SHA
+
+            # TODO: urgently implement connection with server to complete deploy.
