@@ -28,10 +28,10 @@ This project is just a simple discord bot, made in **_Rust_** using **_Serenity_
 1. Use **_`cargo build --release --verbose`_** in your terminal.
 2. Use **_`./target/release/perona`_** in your terminal.
 
-#### 📦 **_Docker production run_**
+<!-- #### 📦 **_Docker production run_** -->
 
-1. Build docker container using **_`docker-compose build`_** in your terminal.
-2. Initialize docker container using **_`docker-compose --env-file .env.prod up -d`_** in your terminal.
+<!-- 1. Build docker container using **_`docker-compose build`_** in your terminal. -->
+<!-- 2. Initialize docker container using **_`docker-compose up -d`_** in your terminal. -->
 
 ## 📝 **_License_**
 

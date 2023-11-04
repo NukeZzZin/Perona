@@ -226,7 +226,7 @@ async fn main() {
 	dotenv().ok();
 	let token = var("DISCORD_TOKEN").expect("[-] Failed to find DISCORD_TOKEN in environment file");
 	let application_id = var("APPLICATION_ID").expect("[-] Failed to find APPLICATION_ID in environment file");
-	let application_owners = var("APPLICATION_OWNERS").expect("[-] Failed to find APPLICATION_OWNERS in environment file");
+	// let application_owners = var("APPLICATION_OWNERS").expect("[-] Failed to find APPLICATION_OWNERS in environment file");
 	let database_uri = var("DATABASE_URI").expect("[-] Failed to find DATABASE_URI in environment file");
 	let database_config = ClientOptions::parse(&database_uri).await.unwrap();
 	let database_client = MongodbClient::with_options(database_config).unwrap();
@@ -248,7 +248,7 @@ async fn main() {
 				.ignore_bots(true)
 				.with_whitespace(false)
 				.case_insensitivity(true)
-				.owners(vec![UserId(application_owners.parse::<u64>().unwrap())].into_iter().collect())
+				// .owners(vec![UserId(application_owners.parse::<u64>().unwrap())].into_iter().collect())
 				.on_mention(Some(UserId(application_id.parse::<u64>().unwrap())));
 			return configuraion;
 		})
